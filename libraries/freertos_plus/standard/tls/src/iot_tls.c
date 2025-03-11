@@ -167,9 +167,8 @@ static void prvFreeContext( TLSContext_t * pxCtx )
         mbedtls_ssl_config_free( &pxCtx->xMbedSslConfig );
         mbedtls_ctr_drbg_free( &pxCtx->xMbedDrbgCtx );
 
-        /* Cleanup PKCS11 only if the handshake was started. */
-        if( ( TLS_HANDSHAKE_NOT_STARTED != pxCtx->xTLSHandshakeState ) &&
-            ( NULL != pxCtx->pxP11FunctionList ) &&
+        /* Cleanup PKCS11 session. */
+        if( ( NULL != pxCtx->pxP11FunctionList ) &&
             ( NULL != pxCtx->pxP11FunctionList->C_CloseSession ) &&
             ( CK_INVALID_HANDLE != pxCtx->xP11Session ) )
         {
