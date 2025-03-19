@@ -486,6 +486,9 @@ static TransportSocketStatus_t establishConnect( NetworkContext_t * pNetworkCont
         {
             ( void ) SOCKETS_Close( tcpSocket );
         }
+
+        /* Additional cleanup for socket - set to INVALID (0xFFFFFFFF) when the socket no longer exists */
+        pSecureSocketsTransportParams->tcpSocket = SOCKETS_INVALID_SOCKET;
     }
 
     return returnStatus;
@@ -578,6 +581,12 @@ TransportSocketStatus_t SecureSocketsTransport_Disconnect( const NetworkContext_
         else
         {
             closeStatus = TRANSPORT_SOCKET_STATUS_SUCCESS;
+
+            /*  
+                Additional cleanup for socket - set to INVALID (0xFFFFFFFF) when the socket no longer exists 
+                SOCKETS_Close will fail iff tcpSocket was invalid in the first place
+            */
+            pSecureSocketsTransportParams->tcpSocket = SOCKETS_INVALID_SOCKET;
         }
 
         if( ( shutdownStatus != TRANSPORT_SOCKET_STATUS_SUCCESS ) || ( closeStatus != TRANSPORT_SOCKET_STATUS_SUCCESS ) )
