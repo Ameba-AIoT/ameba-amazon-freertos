@@ -47,7 +47,15 @@
 /* C runtime includes. */
 #include <string.h>
 
+#if MBEDTLS_VERSION_MAJOR >= 3 && MBEDTLS_VERSION_MINOR >= 6
+#define mbedtls_sha256_starts_ret mbedtls_sha256_starts
+#define mbedtls_sha256_update_ret mbedtls_sha256_update
+#define mbedtls_sha256_finish_ret mbedtls_sha256_finish
 
+#define mbedtls_sha1_starts_ret mbedtls_sha1_starts
+#define mbedtls_sha1_update_ret mbedtls_sha1_update
+#define mbedtls_sha1_finish_ret mbedtls_sha1_finish
+#endif
 
 #define CRYPTO_PRINT( X )    configPRINTF( X )
 

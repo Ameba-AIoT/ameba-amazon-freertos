@@ -37,12 +37,20 @@
 
 /* mbedTLS includes. */
 #include "mbedtls/platform.h"
+#if MBEDTLS_VERSION_MAJOR >= 3 && MBEDTLS_VERSION_MINOR >= 6
+#include "osdep_service.h"
+#include "mbedtls/net_sockets.h"
+#include "mbedtls/library/pk_internal.h"
+#include "mbedtls/library/pk_wrap.h"
+#else
 #include "mbedtls/net.h"
+#include "mbedtls/pk_internal.h"
+#endif
 #include "mbedtls/ctr_drbg.h"
 #include "mbedtls/entropy.h"
 #include "mbedtls/sha256.h"
 #include "mbedtls/pk.h"
-#include "mbedtls/pk_internal.h"
+
 #include "mbedtls/debug.h"
 
 #ifdef MBEDTLS_DEBUG_C
@@ -503,11 +511,21 @@ static int prvInitializeClientCredential_alt( TLSContext_t * pxCtx )
 
     if ( xResult == CKR_OK )
     {
+#if MBEDTLS_VERSION_MAJOR >= 3 && MBEDTLS_VERSION_MINOR >= 6
+        xResult = mbedtls_pk_parse_key( &pxCtx->xMbedPkCtx,
+                                        (const unsigned char *)keyCLIENT_PRIVATE_KEY_PEM,
+                                        strlen(keyCLIENT_PRIVATE_KEY_PEM) + 1,
+                                        NULL,
+                                        0,
+                                        rtw_get_random_bytes_f_rng,
+                                        (void*)1 );
+#else
         xResult = mbedtls_pk_parse_key( &pxCtx->xMbedPkCtx,
                                         (const unsigned char *)keyCLIENT_PRIVATE_KEY_PEM,
                                         strlen(keyCLIENT_PRIVATE_KEY_PEM) + 1,
                                         NULL,
                                         0 );
+#endif
     }
 
     if( 0 == xResult )
