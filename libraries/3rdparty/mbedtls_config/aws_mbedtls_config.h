@@ -1922,7 +1922,7 @@
  * PEM_PARSE uses AES for decrypting encrypted keys.
  */
 #define MBEDTLS_AES_C
-
+#define MBEDTLS_CCM_GCM_CAN_AES
 /**
  * \def MBEDTLS_ARC4_C
  *
@@ -2290,7 +2290,7 @@
  * Requires: MBEDTLS_ECP_C
  */
 #define MBEDTLS_ECDH_C
-
+#define MBEDTLS_CAN_ECDH
 /**
  * \def MBEDTLS_ECDSA_C
  *
@@ -2305,7 +2305,7 @@
  * Requires: MBEDTLS_ECP_C, MBEDTLS_ASN1_WRITE_C, MBEDTLS_ASN1_PARSE_C
  */
 #define MBEDTLS_ECDSA_C
-
+#define MBEDTLS_PK_CAN_ECDSA_SIGN
 /**
  * \def MBEDTLS_ECJPAKE_C
  *
@@ -2455,7 +2455,7 @@
  * Uncomment to enable generic message digest wrappers.
  */
 #define MBEDTLS_MD_C
-
+#define MBEDTLS_MD_CAN_SHA256
 /**
  * \def MBEDTLS_MD2_C
  *
@@ -3372,7 +3372,7 @@
 #include MBEDTLS_USER_CONFIG_FILE
 #endif
 
-#include "mbedtls/check_config.h"
+//#include "mbedtls/check_config.h"
 
 #endif /* MBEDTLS_CONFIG_H */
 
