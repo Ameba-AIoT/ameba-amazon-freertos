@@ -559,11 +559,13 @@ TransportSocketStatus_t SecureSocketsTransport_Disconnect( const NetworkContext_
 
         if( transportSocketStatus != ( int32_t ) SOCKETS_ERROR_NONE )
         {
-            LogError( ( "Failed to close connection: SOCKETS_Shutdown call failed. %d", transportSocketStatus ) );
-            shutdownStatus = TRANSPORT_SOCKET_STATUS_INTERNAL_ERROR;
+            LogError( ( "Failed to close connection, it may already be disconnected: SOCKETS_Shutdown call failed. %d", transportSocketStatus ) );
+            /* Here, a disconnection by the physical layer likely occured. lwip_shutdown() -> done_socket() in lwip has already cleaned its structs in this object */
+            shutdownStatus = TRANSPORT_SOCKET_STATUS_SUCCESS;
         }
         else
         {
+            /* Here, the user manually initiates disconnect on a live connection, object is freed as usual */
             shutdownStatus = TRANSPORT_SOCKET_STATUS_SUCCESS;
         }
 
