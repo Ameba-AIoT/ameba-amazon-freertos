@@ -34,15 +34,15 @@
 #ifndef otapalconfigCODE_SIGNING_CERTIFICATE
 #define otapalconfigCODE_SIGNING_CERTIFICATE \
 "-----BEGIN CERTIFICATE-----\n" \
-"MIIBXDCCAQOgAwIBAgIJAPMhJT8l0C6AMAoGCCqGSM49BAMCMCExHzAdBgNVBAMM\n" \
-"FnRlc3Rfc2lnbmVyQGFtYXpvbi5jb20wHhcNMTgwNjI3MjAwNDQyWhcNMTkwNjI3\n" \
-"MjAwNDQyWjAhMR8wHQYDVQQDDBZ0ZXN0X3NpZ25lckBhbWF6b24uY29tMFkwEwYH\n" \
-"KoZIzj0CAQYIKoZIzj0DAQcDQgAEyza/tGLVbVxhL41iYtC8D6tGEvAHu498gNtq\n" \
-"DtPsKaoR3t5xQx+6zdWiCi32fgFT2vkeVAmX3pf/Gl8nIP48ZqMkMCIwCwYDVR0P\n" \
-"BAQDAgeAMBMGA1UdJQQMMAoGCCsGAQUFBwMDMAoGCCqGSM49BAMCA0cAMEQCIDkf\n" \
-"83Oq8sOXhSyJCWAN63gc4vp9//RFCXh/hUXPYcTWAiBgmQ5JV2MZH01Upi2lMflN\n" \
-"YLbC+lYscwcSlB2tECUbJA==\n" \
-"-----END CERTIFICATE-----\n"
+"................................................................\n" \
+"................................................................\n" \
+"................................................................\n" \
+"................................................................\n" \
+"................................................................\n" \
+"................................................................\n" \
+"................................................................\n" \
+".........................\n" \
+"-----END CERTIFICATE-----"
 #endif
 
 /**
