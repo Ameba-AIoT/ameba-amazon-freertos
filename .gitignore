@@ -8,6 +8,8 @@ doxygen_warnings.txt
 .vscode/*
 *.o
 *.d
+*.s
+*.i
 *.su 
 *.elf
 *.hex
