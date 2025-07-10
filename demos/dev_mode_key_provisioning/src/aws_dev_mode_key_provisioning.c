@@ -61,6 +61,12 @@
 #include "mbedtls/pk.h"
 #include "mbedtls/oid.h"
 
+#if MBEDTLS_VERSION_MAJOR >= 3 && MBEDTLS_VERSION_MINOR >= 6
+#if defined(CONFIG_AMEBAZ2)
+#include "osdep_service.h"
+#endif
+#endif
+
 /* Default FreeRTOS API for console logging. */
 #define DEV_MODE_KEY_PROVISIONING_PRINT( X )    vLoggingPrintf X
 
@@ -327,7 +333,16 @@ CK_RV xProvisionPrivateKey( CK_SESSION_HANDLE xSession,
     mbedtls_pk_context xMbedPkContext = { 0 };
 
     mbedtls_pk_init( &xMbedPkContext );
+
+#if MBEDTLS_VERSION_MAJOR >= 3 && MBEDTLS_VERSION_MINOR >= 6
+#if defined(CONFIG_AMEBAZ2) || defined(CONFIG_AMEBAD)
+    lMbedResult = mbedtls_pk_parse_key( &xMbedPkContext, pucPrivateKey, xPrivateKeyLength, NULL, 0, rtw_get_random_bytes_f_rng, (void*)1);
+#elif defined(CONFIG_AMEBADPLUS) || defined(CONFIG_AMEBALITE) || defined(CONFIG_AMEBASMART) || defined(CONFIG_AMEBAGREEN2)
+    lMbedResult = mbedtls_pk_parse_key( &xMbedPkContext, pucPrivateKey, xPrivateKeyLength, NULL, 0, TRNG_get_random_bytes_f_rng, (void*)1);
+#endif
+#else
     lMbedResult = mbedtls_pk_parse_key( &xMbedPkContext, pucPrivateKey, xPrivateKeyLength, NULL, 0 );
+#endif
 
     if( lMbedResult != 0 )
     {
@@ -388,7 +403,15 @@ CK_RV xProvisionPublicKey( CK_SESSION_HANDLE xSession,
     mbedtls_pk_init( &xMbedPkContext );
 
     /* Try parsing the private key using mbedtls_pk_parse_key. */
+#if MBEDTLS_VERSION_MAJOR >= 3 && MBEDTLS_VERSION_MINOR >= 6
+#if defined(CONFIG_AMEBAZ2) || defined(CONFIG_AMEBAD)
+    lMbedResult = mbedtls_pk_parse_key( &xMbedPkContext, pucKey, xKeyLength, NULL, 0, rtw_get_random_bytes_f_rng, (void*)1);
+#elif defined(CONFIG_AMEBADPLUS) || defined(CONFIG_AMEBALITE) || defined(CONFIG_AMEBASMART) || defined(CONFIG_AMEBAGREEN2)
+    lMbedResult = mbedtls_pk_parse_key( &xMbedPkContext, pucKey, xKeyLength, NULL, 0, TRNG_get_random_bytes_f_rng, (void*)1);
+#endif
+#else
     lMbedResult = mbedtls_pk_parse_key( &xMbedPkContext, pucKey, xKeyLength, NULL, 0 );
+#endif
 
     /* If mbedtls_pk_parse_key didn't work, maybe the private key is not included in the input passed in.
      * Try to parse just the public key. */
