@@ -65,7 +65,6 @@ static ameba_ota_context_t ota_ctx;
 OtaPalStatus_New_t prvPAL_Streams_CheckFileSignature_rtl8721d(AfrOtaJobDocumentFields_t * const C);
 
 extern void rtc_backup_timeinfo(void);
-extern int ota_writestream_user(u32 address, u32 len, u8 * data);
 
 static void prvPAL_Streams_SysReset_rtl8721d(u32 timeout_ms)
 {

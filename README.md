@@ -38,6 +38,8 @@ To directly access the **Getting Started Guide** for supported hardware platform
 
 For detailed documentation on FreeRTOS, refer to the [FreeRTOS User Guide](https://aws.amazon.com/documentation/freertos).
 
+For detailed documentation on AWS IoT, refer to the [AWS IoT User Guide](https://docs.aws.amazon.com/iot/latest/developerguide/what-is-aws-iot.html)
+
 ## Supported Hardware
 
 For additional boards that are supported for FreeRTOS, please visit the [AWS Device Catalog](https://devices.amazonaws.com/search?kw=freertos)
@@ -68,13 +70,15 @@ This repository uses Mbed TLS under Apache 2.0
 (WIP!)
 
 ## AmebaD
-Work with 
+The current amazon-freertos submodule is working with the following Ameba D SDK and patches:
 
-sdk-amebad_v6.2C-RC.tar.gz + 
+- sdk-amebad_v6.2C-RC.tar.gz +
+- 6.2_patch_integrated_250321_975f3cee.zip +
+- 6.2c_patch_Support_Amazon_v202406_LTS_i250108_r250715_v(03).zip
 
-6.2_patch_integrated_240816_821f1f1d.zip +
+Please refer to [AmebaD General Build](docs/amebad_general_build.md) for build details
 
-6.2c_patch_Support_Amazon_v202406_LTS_w240816_XXXXXX_(v01).zip (TODO!)
+Please refer to [AmebaD OTA Guide](docs/amebad_ota_guide.md) for OTA details
 
 
 ## AmebaDplus

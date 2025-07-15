@@ -1,0 +1,86 @@
+#*****************************************************************************#
+#                              Path Declaration
+#*****************************************************************************#
+
+AMAZON_FREERTOS_DIR      = $(ABS_ROOTDIR)/../../../../../component/common/application/amazon-freertos
+AMAZON_FREERTOS_BUILDDIR = $(AMAZON_FREERTOS_DIR)/project/amebaD/Makefile
+ifeq ($(MBEDTLS_AMAZON_FREERTOS_ENABLE), y)
+MBEDTLSDIR               = $(AMAZON_FREERTOS_DIR)/libraries/3rdparty/mbedtls
+endif
+
+#*****************************************************************************#
+#                              Include Directories
+#*****************************************************************************#
+
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/demos/include
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/demos/common/http_demo_helpers
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/demos/common/mqtt_demo_helpers
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/demos/common/mqtt_subscription_manager
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/corePKCS11/source/dependency/3rdparty/pkcs11/published/2-40-errata-1
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/corePKCS11/source/include
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/demos/common/pkcs11_helpers
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/demos/device_defender_for_aws
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/demos/dev_mode_key_provisioning/include
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/demos/network_manager
+
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/3rdparty/jsmn
+ifeq ($(MBEDTLS_AMAZON_FREERTOS_ENABLE), y)
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/3rdparty
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/3rdparty/mbedtls/include
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/3rdparty/mbedtls/include/mbedtls
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/3rdparty/mbedtls/include/psa
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/3rdparty/mbedtls/library
+endif
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/3rdparty/mbedtls_config
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/3rdparty/mbedtls_utils
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/3rdparty/tinycbor/src
+
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/common/abstractions/mqtt_agent/include
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/common/abstractions/platform/include
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/common/abstractions/platform/include/platform
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/common/abstractions/platform/freertos/include
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/common/abstractions/secure_sockets/include
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/common/abstractions/transport/secure_sockets
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/common/abstractions/wifi/include
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/common/c_sdk/standard/common/include
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/common/c_sdk/standard/common/include/private
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/common/freertos_plus/standard/crypto/include
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/common/freertos_plus/standard/utils/include
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/common/freertos_plus/standard/tls/include
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/common/logging/include
+
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/backoffAlgorithm/source/include
+
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/coreHTTP/source/include
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/coreHTTP/source/interface
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/coreHTTP/source/dependency/3rdparty/llhttp/include
+
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/coreJSON/source/include
+
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/coreMQTT/source/include
+
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/coreMQTT-Agent/source/include
+
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/device_defender_for_aws/source/include
+
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/device_shadow_for_aws/source/include
+
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/jobs_for_aws/source/include
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/jobs_for_aws/source/otaJobParser/include
+
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/ota_for_aws/source/include
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/ota_for_aws/source
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/ota_for_aws/source/portable
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/ota_for_aws/source/portable/os
+
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/libraries/mqtt_file_streams_for_aws/source/include
+
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/ports/amebaD/example
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/ports/amebaD/config_files
+IFLAGS               += -I$(AMAZON_FREERTOS_DIR)/ports/amebaD/ota
+
+#*****************************************************************************#
+#                           ARM COMPILATION FLAGS
+#*****************************************************************************#
+
+GLOBAL_CFLAGS += -DMBEDTLS_CONFIG_FILE=\<aws_mbedtls_config.h\>

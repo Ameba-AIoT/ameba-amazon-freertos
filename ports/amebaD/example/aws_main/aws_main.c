@@ -101,22 +101,34 @@ int aws_main( void )
 #endif
 
     //mqtt mutual auto demo
+#if defined(CONFIG_EXAMPLE_AMAZON_FREERTOS_MQTT_MUTUAL_AUTO) && CONFIG_EXAMPLE_AMAZON_FREERTOS_MQTT_MUTUAL_AUTO
     RunCoreMqttMutualAuthDemo(0, NULL, NULL, NULL, NULL);
+#endif
 
     //http mutual auto demo
-    //RunCoreHttpMutualAuthDemo(0, NULL, NULL, NULL, NULL);
+#if defined(CONFIG_EXAMPLE_AMAZON_FREERTOS_HTTP_MUTUAL_AUTO) && CONFIG_EXAMPLE_AMAZON_FREERTOS_HTTP_MUTUAL_AUTO
+    RunCoreHttpMutualAuthDemo(0, NULL, NULL, NULL, NULL);
+#endif
 
     //device shadow demo
-    //RunDeviceShadowDemo(0, NULL, NULL, NULL, NULL);
+#if defined(CONFIG_EXAMPLE_AMAZON_FREERTOS_DEVICE_SHADOW) && CONFIG_EXAMPLE_AMAZON_FREERTOS_DEVICE_SHADOW
+    RunDeviceShadowDemo(0, NULL, NULL, NULL, NULL);
+#endif
 
     //device defender demo
-    //RunDeviceDefenderDemo(0, NULL, NULL, NULL, NULL);
+#if defined(CONFIG_EXAMPLE_AMAZON_FREERTOS_DEVICE_DEFENDER) && CONFIG_EXAMPLE_AMAZON_FREERTOS_DEVICE_DEFENDER
+    RunDeviceDefenderDemo(0, NULL, NULL, NULL, NULL);
+#endif
 
     //ota over mqtt demo
-    //RunOtaCoreMqttDemo(0, NULL, NULL, NULL, NULL);
+#if defined(CONFIG_EXAMPLE_AMAZON_FREERTOS_OTA_OVER_MQTT) && CONFIG_EXAMPLE_AMAZON_FREERTOS_OTA_OVER_MQTT
+    RunOtaCoreMqttDemo(0, NULL, NULL, NULL, NULL);
+#endif
 
     //ota over mqtt streams demo (NEW!)
-    //RunOtaCoreMqttStreamsDemo(0, NULL, NULL, NULL, NULL);
+#if defined(CONFIG_EXAMPLE_AMAZON_FREERTOS_OTA_OVER_MQTT_STREAMS) && CONFIG_EXAMPLE_AMAZON_FREERTOS_OTA_OVER_MQTT_STREAMS
+    RunOtaCoreMqttStreamsDemo(0, NULL, NULL, NULL, NULL);
+#endif
 
     return 0;
 }
