@@ -38,7 +38,12 @@
 /* mbedTLS includes. */
 #include "mbedtls/platform.h"
 #if MBEDTLS_VERSION_MAJOR >= 3 && MBEDTLS_VERSION_MINOR >= 6
+#if defined(CONFIG_AMEBAZ2) || defined(CONFIG_AMEBAD)
 #include "osdep_service.h"
+#elif defined(CONFIG_AMEBADPLUS) || defined(CONFIG_AMEBALITE) || defined(CONFIG_AMEBASMART) || defined(CONFIG_AMEBAGREEN2)
+#include "ameba.h"
+#endif
+
 #include "mbedtls/net_sockets.h"
 #include "mbedtls/library/pk_internal.h"
 #include "mbedtls/library/pk_wrap.h"
@@ -517,7 +522,11 @@ static int prvInitializeClientCredential_alt( TLSContext_t * pxCtx )
                                         strlen(keyCLIENT_PRIVATE_KEY_PEM) + 1,
                                         NULL,
                                         0,
+#if defined(CONFIG_AMEBAZ2) || defined(CONFIG_AMEBAD)
                                         rtw_get_random_bytes_f_rng,
+#elif defined(CONFIG_AMEBADPLUS) || defined(CONFIG_AMEBALITE) || defined(CONFIG_AMEBASMART) || defined(CONFIG_AMEBAGREEN2)
+					TRNG_get_random_bytes_f_rng,
+#endif
                                         (void*)1 );
 #else
         xResult = mbedtls_pk_parse_key( &pxCtx->xMbedPkCtx,

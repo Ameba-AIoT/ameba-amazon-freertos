@@ -62,8 +62,10 @@
 #include "mbedtls/oid.h"
 
 #if MBEDTLS_VERSION_MAJOR >= 3 && MBEDTLS_VERSION_MINOR >= 6
-#if defined(CONFIG_AMEBAZ2)
+#if defined(CONFIG_AMEBAZ2) || defined(CONFIG_AMEBAD)
 #include "osdep_service.h"
+#elif defined(CONFIG_AMEBADPLUS) || defined(CONFIG_AMEBALITE) || defined(CONFIG_AMEBASMART) || defined(CONFIG_AMEBAGREEN2)
+#include "ameba.h"
 #endif
 #endif
 
