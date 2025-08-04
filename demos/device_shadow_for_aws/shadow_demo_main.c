@@ -805,11 +805,7 @@ int RunDeviceShadowDemo( bool awsIotMqttMode,
     do
     {
         /* Wait for Networking */
-        do
-        {
-            LogInfo( ( "Waiting for the network link up event..." ) );
-            vTaskDelay( pdMS_TO_TICKS( 2000U ) );
-        } while( wifi_is_connected_to_ap() != 0 );
+        RTK_SDK_CHECK_CONNECTIVITY();
 
         xDemoStatus = EstablishMqttSession( &xMqttContext,
                                             &xNetworkContext,

@@ -27,6 +27,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "aws_demo.h"
+
 /* Demo config. */
 #include "defender_demo_config.h"
 
@@ -617,11 +619,7 @@ int RunDeviceDefenderDemo( bool awsIotMqttMode,
     do
     {
         /* Wait for Networking */
-        do
-        {
-            LogInfo( ( "Waiting for the network link up event..." ) );
-            vTaskDelay( pdMS_TO_TICKS( 2000U ) );
-        } while( wifi_is_connected_to_ap() != 0 );
+        RTK_SDK_CHECK_CONNECTIVITY();
 
         /* Start with report not received. */
         reportStatus = ReportStatusNotReceived;

@@ -31,6 +31,7 @@
 #include <stdbool.h>
 #include <errno.h>
 
+#include "aws_demo.h"
 #include "aws_demo_config.h"
 
 #include "FreeRTOS.h"
@@ -1903,11 +1904,7 @@ int RunOtaCoreMqttDemo( bool xAwsIotMqttMode,
     BaseType_t xMqttInitialized = pdFALSE;
 
     /* Wait for Networking */
-    do
-    {
-        LogInfo( ( "Waiting for the network link up event..." ) );
-        vTaskDelay( pdMS_TO_TICKS( 2000U ) );
-    } while( wifi_is_connected_to_ap() != 0 );
+    RTK_SDK_CHECK_CONNECTIVITY();
 
     LogInfo( ( "OTA over MQTT demo, Application version %u.%u.%u",
                appFirmwareVersion.u.x.major,

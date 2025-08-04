@@ -48,6 +48,7 @@
 #include "task.h"
 #include "semphr.h"
 
+#include "aws_demo.h"
 #include "ota_config.h"
 
 #include "iot_network.h"
@@ -1059,11 +1060,7 @@ int RunOtaCoreMqttStreamsDemo( bool xAwsIotMqttMode,
     BaseType_t xMqttInitialized = pdFALSE;
 
     /* Wait for Networking */
-    do
-    {
-        LogInfo( ( "Waiting for the network link up event..." ) );
-        vTaskDelay( pdMS_TO_TICKS( 2000U ) );
-    } while( wifi_is_connected_to_ap() != 0);
+    RTK_SDK_CHECK_CONNECTIVITY();
 
     LogInfo( ( "MQTT OTA Streams demo, Application version %u.%u.%u",
                appFirmwareVersion.u.x.major,
