@@ -3,13 +3,16 @@
 ## How to use
 This is the library sdk which provides Amazon freertos examples. To make sure example working correctly, please download the working chip sdk from related page with this submodule updated.
 
-|Chip         |          Link       |     Supported branch link      |
-|:----------- |:---------------------:| :---------------------:|
-|Ameba Z2     | https://github.com/Ameba-AIoT/ameba-rtos-z2 | https://github.com/Ameba-AIoT/amazon-freertos/tree/amebaZ2-7.1d-202107.00-LTS |
-|Ameba D     | https://github.com/Ameba-AIoT/ameba-rtos-d/ | https://github.com/Ameba-AIoT/ameba-amazon-freertos |
-|Ameba DPlus     | https://github.com/Ameba-AIoT/ameba-rtos | https://github.com/Ameba-AIoT/ameba-amazon-freertos |
-|Ameba Smart     | https://github.com/Ameba-AIoT/ameba-rtos | https://github.com/Ameba-AIoT/ameba-amazon-freertos |
-
+| Chip        | SDK        | AWS FreeRTOS Version   | mbedtls Version | Branch Link                                                                                    |
+|-------------|------------|------------------------|-----------------|------------------------------------------------------------------------------------------------|
+| Ameba Z2    | 7.1d       | FreeRTOS-LTS-202107.xx | 2.28.1          | https://github.com/Ameba-AIoT/ameba-amazon-freertos/tree/amebaZ2-7.1d-202107.00-LTS            |
+|             | 7.1e       | FreeRTOS-LTS-202406.xx | 3.6.3           | https://github.com/Ameba-AIoT/ameba-amazon-freertos/tree/FreeRTOS-LTS-202406.xx_mbedtls-v3.6.3 |
+| Ameba D     | 6.2c       | FreeRTOS-LTS-202406.xx | 2.28.1          | https://github.com/Ameba-AIoT/ameba-amazon-freertos/tree/FreeRTOS-LTS-202406.xx                |
+|             | 6.2c       | FreeRTOS-LTS-202406.xx | 3.6.3           | https://github.com/Ameba-AIoT/ameba-amazon-freertos/tree/FreeRTOS-LTS-202406.xx_mbedtls-v3.6.3 |
+| Ameba DPlus | rtos-v1.0a | FreeRTOS-LTS-202406.xx | 2.28.1          | https://github.com/Ameba-AIoT/ameba-amazon-freertos/tree/FreeRTOS-LTS-202406.xx                |
+|             | rtos-v1.0a | FreeRTOS-LTS-202406.xx | 3.6.3           | https://github.com/Ameba-AIoT/ameba-amazon-freertos/tree/FreeRTOS-LTS-202406.xx_mbedtls-v3.6.3 |
+|             | rtos-v1.1  | FreeRTOS-LTS-202406.xx | 3.6.3           | https://github.com/Ameba-AIoT/ameba-amazon-freertos/tree/FreeRTOS-LTS-202406.xx_mbedtls-v3.6.3 |
+| Ameba Lite  | rtos-v1.1  | FreeRTOS-LTS-202406.xx | 3.6.3           | https://github.com/Ameba-AIoT/ameba-amazon-freertos/tree/FreeRTOS-LTS-202406.xx_mbedtls-v3.6.3 |
 
 ## Cloning
 This repo uses [Git Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to bring in dependent components.
@@ -18,11 +21,11 @@ Note: If you download the ZIP file provided by GitHub UI, you will not get the c
 
 To clone using HTTPS:
 ```
-git clone https://github.com/ambiot/amazon-freertos.git --recurse-submodules
+git clone https://github.com/Ameba-AIoT/ameba-amazon-freertos.git --recurse-submodules
 ```
 Using SSH:
 ```
-git clone git@github.com:ambiot/amazon-freertos.git --recurse-submodules
+git clone git@github.com:Ameba-AIoT/ameba-amazon-freertos.git --recurse-submodules
 ```
 
 If you have downloaded the repo without using the `--recurse-submodules` argument, you need to run:
@@ -43,13 +46,10 @@ For detailed documentation on FreeRTOS, refer to the [FreeRTOS User Guide](https
 For additional boards that are supported for FreeRTOS, please visit the [AWS Device Catalog](https://devices.amazonaws.com/search?kw=freertos)
 
 The following MCU boards are supported for FreeRTOS:
-1. **Realtek Ameba D** - [AmebaD](https://www.amebaiot.com/en/amebad).
-    * [Getting Started Guide](https://github.com/ambiot/amazon-freertos/blob/master/AmebaD_Amazon_FreeRTOS_Getting_Started_Guide_v1.6.pdf)
-    * IDEs: [IAR Embedded Workbench](https://www.iar.com/iar-embedded-workbench/partners/texas-instruments)
-2. **Realtek Ameba Z2** - [AmebaZ2](https://www.amebaiot.com/en/amebaz2).
-    * [Getting Started Guide](https://github.com/ambiot/amazon-freertos/blob/master/AmebaZ2_Amazon_FreeRTOS_Getting_Started_Guide_v1.0.pdf)
-    * IDEs: [IAR Embedded Workbench](https://www.iar.com/iar-embedded-workbench/partners/texas-instruments)
-3. **Windows Simulator** - To evaluate FreeRTOS without using MCU-based hardware, you can use the Windows Simulator.
+1. **Realtek Boards** - Please refer to the support patch provided by our FAEs for the latest READMEs and Getting Started Documents.
+     List of supported boards may be found in the table above and below
+
+2. **Windows Simulator** - To evaluate FreeRTOS without using MCU-based hardware, you can use the Windows Simulator.
     * Requirements: Microsoft Windows 7 or newer, with at least a dual core and a hard-wired Ethernet connection
     * [Getting Started Guide](https://docs.aws.amazon.com/freertos/latest/userguide/getting_started_windows.html)
     * IDE: [Visual Studio Community Edition](https://www.visualstudio.com/downloads/)
@@ -64,23 +64,34 @@ This repository uses Mbed TLS under Apache 2.0
 # Support list
 
 ## AmebaZ2
+Work with
 
-(WIP!)
+sdk-ameba-v7.1e-rc.zip +
+
+7.1e_patch_support_amazon_v202406_LTS_mbedtls363_iNA_r250618_(v01).zip
 
 ## AmebaD
 Work with 
 
 sdk-amebad_v6.2C-RC.tar.gz + 
 
-6.2_patch_integrated_240816_821f1f1d.zip +
+6.2_patch_integrated_250626_15692ffb.zip
 
-6.2c_patch_Support_Amazon_v202406_LTS_w240816_XXXXXX_(v01).zip (TODO!)
-
+6.2c_patch_Support_Amazon_v202406_LTS_mbedtls363_i250626_r250818_(v02).zip
 
 ## AmebaDplus
 Work with
 
-(WIP!)
+sdk-ameba-rtos_v1.1.zip +
+
+1.1_patch_dplus_and_lite_amazon_v202406-LTS_w_mbed363_iNA_r250806_v01.zip
+
+## AmebaLite
+Work with
+
+sdk-ameba-rtos_v1.1.zip +
+
+1.1_patch_dplus_and_lite_amazon_v202406-LTS_w_mbed363_iNA_r250806_v01.zip
 
 
 ## AmebaSmart
@@ -92,4 +103,4 @@ Work with
 
 This repository is continuing development from old repository link
 
-https://github.com/ambiot/amazon-freertos
+https://github.com/Ameba-AIoT/amazon-freertos
