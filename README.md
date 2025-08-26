@@ -3,12 +3,12 @@
 ## How to use
 This is the library sdk which provides Amazon freertos examples. To make sure example working correctly, please download the working chip sdk from related page with this submodule updated.
 
-|Chip         |          Link       |     Supported branch link      |
-|:----------- |:---------------------:| :---------------------:|
-|Ameba Z2     | https://github.com/Ameba-AIoT/ameba-rtos-z2 | https://github.com/Ameba-AIoT/amazon-freertos/tree/amebaZ2-7.1d-202107.00-LTS |
-|Ameba D     | https://github.com/Ameba-AIoT/ameba-rtos-d/ | https://github.com/Ameba-AIoT/ameba-amazon-freertos |
-|Ameba DPlus     | https://github.com/Ameba-AIoT/ameba-rtos | https://github.com/Ameba-AIoT/ameba-amazon-freertos |
-|Ameba Smart     | https://github.com/Ameba-AIoT/ameba-rtos | https://github.com/Ameba-AIoT/ameba-amazon-freertos |
+|Chip       |Link                                       |Supported branch link                                                                    |
+|:---------:|:-----------------------------------------:|:---------------------------------------------------------------------------------------:|
+|Ameba Z2   |https://github.com/Ameba-AIoT/ameba-rtos-z2|https://github.com/Ameba-AIoT/ameba-amazon-freertos/tree/FreeRTOS-LTS-202406.xx_optimized|
+|Ameba D    |https://github.com/Ameba-AIoT/ameba-rtos-d |https://github.com/Ameba-AIoT/ameba-amazon-freertos/tree/FreeRTOS-LTS-202406.xx_optimized|
+|Ameba DPlus|https://github.com/Ameba-AIoT/ameba-rtos   |https://github.com/Ameba-AIoT/ameba-amazon-freertos                                      |
+|Ameba Smart|https://github.com/Ameba-AIoT/ameba-rtos   |https://github.com/Ameba-AIoT/ameba-amazon-freertos                                      |
 
 
 ## Cloning
@@ -47,10 +47,10 @@ For additional boards that are supported for FreeRTOS, please visit the [AWS Dev
 The following MCU boards are supported for FreeRTOS:
 1. **Realtek Ameba D** - [AmebaD](https://www.amebaiot.com/en/amebad).
     * [Getting Started Guide](https://github.com/ambiot/amazon-freertos/blob/master/AmebaD_Amazon_FreeRTOS_Getting_Started_Guide_v1.6.pdf)
-    * IDEs: [IAR Embedded Workbench](https://www.iar.com/iar-embedded-workbench/partners/texas-instruments)
+    * IDE: [IAR Embedded Workbench](https://www.iar.com/iar-embedded-workbench/partners/texas-instruments)
 2. **Realtek Ameba Z2** - [AmebaZ2](https://www.amebaiot.com/en/amebaz2).
     * [Getting Started Guide](https://github.com/ambiot/amazon-freertos/blob/master/AmebaZ2_Amazon_FreeRTOS_Getting_Started_Guide_v1.0.pdf)
-    * IDEs: [IAR Embedded Workbench](https://www.iar.com/iar-embedded-workbench/partners/texas-instruments)
+    * IDE: [Visual Studio Community Edition](https://www.visualstudio.com/downloads/)
 3. **Windows Simulator** - To evaluate FreeRTOS without using MCU-based hardware, you can use the Windows Simulator.
     * Requirements: Microsoft Windows 7 or newer, with at least a dual core and a hard-wired Ethernet connection
     * [Getting Started Guide](https://docs.aws.amazon.com/freertos/latest/userguide/getting_started_windows.html)
@@ -66,15 +66,21 @@ This repository uses Mbed TLS under Apache 2.0
 # Support list
 
 ## AmebaZ2
+The current amazon-freertos submodule is working with the following AmebaZ2 SDK and patches:
 
-(WIP!)
+- sdk-ameba-v7.1e-rc.zip
+- 7.1e_patch_support_amazon_v202406_LTS_optimized_iNA_r250827_v(01).zip
+
+Please refer to [AmebaZ2 General Build](docs/amebaz2_general_build.md) for build details
+
+Please refer to [AmebaZ2 OTA Guide](docs/amebaz2_ota_guide.md) for OTA details
 
 ## AmebaD
-The current amazon-freertos submodule is working with the following Ameba D SDK and patches:
+The current amazon-freertos submodule is working with the following AmebaD SDK and patches:
 
 - sdk-amebad_v6.2C-RC.tar.gz +
 - 6.2_patch_integrated_250321_975f3cee.zip +
-- 6.2c_patch_Support_Amazon_v202406_LTS_i250108_r250715_v(03).zip
+- 6.2c_patch_Support_Amazon_v202406_LTS_optimized_i250108_r250715_(v01).zip
 
 Please refer to [AmebaD General Build](docs/amebad_general_build.md) for build details
 
