@@ -11,7 +11,7 @@ The current amazon-freertos submodule is working with the following Ameba D SDK 
 
 - sdk-amebad_v6.2C-RC.tar.gz +
 - 6.2_patch_integrated_250321_975f3cee.zip +
-- 6.2c_patch_Support_Amazon_v202406_LTS_i250108_r250715_v(03).zip
+- 6.2c_patch_Support_Amazon_v202406_LTS_optimized_i250108_r250715_(v01).zip
 
 After applying the patches to the SDK, run the amazon_freertos_setup.sh script for linux
 
@@ -54,7 +54,7 @@ Do not forget to run `./amazon_freertos_setup.sh amebad` to run the submodules c
 
 #### IAR
 
-All of the IAR files is currently still inside the 6.2c_patch_Support_Amazon_v202406_LTS_i250108_r250715_v(03).zip patch.
+All of the IAR files is currently still inside the 6.2c_patch_Support_Amazon_v202406_LTS_optimized_i250108_r250715_(v01).zip patch.
 
 There is no need to change the settings of the IAR project, the patch already override the settings for Amazon FreeRTOS build.
 
