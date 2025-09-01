@@ -1,0 +1,11 @@
+
+# AWS Directories Definition
+# -------------------------------------------------------------------
+MBEDTLS_VERSION = mbedtls-2.28.1
+AWS_MBEDTLSDIR  = $(AWS_FREERTOS_DIR)/libraries/3rdparty/mbedtls
+AWS_FREERTOSDIR = $(SDKROOTDIR)/component/os/freertos/freertos_v10.4.3
+
+# AWS C flags
+# -------------------------------------------------------------------
+CFLAGS += -DCONFIG_AMAZON_FREERTOS=1
+CFLAGS += -DMBEDTLS_CONFIG_FILE=\"aws_mbedtls_config.h\"

@@ -1,0 +1,104 @@
+
+include $(AWS_INCLUDE_HDR)
+
+# AWS sources
+# -------------------------------------------------------------------
+
+#aws - ssl - mbedtls2.28.1
+SRC_C += $(AWS_MBEDTLSDIR)/library/aes.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/aesni.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/arc4.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/aria.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/asn1parse.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/asn1write.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/base64.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/bignum.c
+#SRC_C += $(AWS_FREERTOS_DIR)/libraries/3rdparty/mbedtls_rtk/bignum.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/blowfish.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/camellia.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/ccm.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/certs.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/chacha20.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/chachapoly.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/cipher.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/cipher_wrap.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/cmac.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/constant_time.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/ctr_drbg.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/debug.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/des.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/dhm.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/ecdh.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/ecdsa.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/ecjpake.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/ecp.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/ecp_curves.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/entropy.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/entropy_poll.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/error.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/gcm.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/havege.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/hkdf.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/hmac_drbg.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/md.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/md2.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/md4.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/md5.c
+#SRC_C += $(AWS_MBEDTLSDIR)/library/md_wrap.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/memory_buffer_alloc.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/3rdparty/mbedtls_rtk/net_sockets.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/nist_kw.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/oid.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/padlock.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/pem.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/pk.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/pk_wrap.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/pkcs11.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/pkcs12.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/pkcs5.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/pkparse.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/pkwrite.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/platform.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/platform_util.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/poly1305.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/ripemd160.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/rsa.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/rsa_internal.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/sha1.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/sha256.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/sha512.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/ssl_cache.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/ssl_ciphersuites.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/ssl_cli.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/ssl_cookie.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/ssl_msg.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/ssl_srv.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/ssl_ticket.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/ssl_tls.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/threading.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/timing.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/version.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/version_features.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/x509.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/x509_create.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/x509_crl.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/x509_crt.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/x509_csr.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/x509write_crt.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/x509write_csr.c
+SRC_C += $(AWS_MBEDTLSDIR)/library/xtea.c
+
+#aws - os - freertos 10.4.3
+SRC_C += $(AWS_FREERTOSDIR)/croutine.c
+SRC_C += $(AWS_FREERTOSDIR)/event_groups.c
+SRC_C += $(AWS_FREERTOSDIR)/list.c
+SRC_C += $(AWS_FREERTOSDIR)/queue.c
+SRC_C += $(AWS_FREERTOSDIR)/stream_buffer.c
+SRC_C += $(AWS_FREERTOSDIR)/tasks.c
+SRC_C += $(AWS_FREERTOSDIR)/timers.c
+
+SRC_C += $(AWS_FREERTOSDIR)/portable/GCC/ARM_CM33_NTZ/non_secure/port.c
+SRC_C += $(AWS_FREERTOSDIR)/portable/GCC/ARM_CM33_NTZ/non_secure/portasm.c
+
+SRC_C += $(SDKROOTDIR)/component/os/freertos/freertos_heap_rtk.c
+SRC_C += $(SDKROOTDIR)/component/os/freertos/freertos_heap5_config.c

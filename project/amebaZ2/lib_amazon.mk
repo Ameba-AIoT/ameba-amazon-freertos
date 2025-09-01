@@ -1,4 +1,15 @@
 
+# AWS directories
+# -------------------------------------------------------------------
+
+SDKROOTDIR            = ../../..
+AWS_FREERTOS_DIR      = $(SDKROOTDIR)/component/common/application/amazon-freertos
+AWS_FREERTOS_BUILDDIR = $(AWS_FREERTOS_DIR)/project/amebaZ2
+
+AWS_INCLUDE           = $(AWS_FREERTOS_BUILDDIR)/Makefile.include.aws
+AWS_INCLUDE_HDR       = $(AWS_FREERTOS_BUILDDIR)/Makefile.include.hdr.list
+AWS_INCLUDE_APP       = $(AWS_FREERTOS_BUILDDIR)/Makefile.include.app.list
+
 # Initialize tool chain
 # -------------------------------------------------------------------
 
@@ -37,130 +48,48 @@ INFO_DIR=$(TARGET)/Debug/info
 INCLUDES =
 INCLUDES += -I../inc
 
-INCLUDES += -I../../../component/common/api
-INCLUDES += -I../../../component/common/api/platform
-INCLUDES += -I../../../component/common/api/wifi
-INCLUDES += -I../../../component/common/api/wifi/rtw_wpa_supplicant/src
-INCLUDES += -I../../../component/common/api/wifi/rtw_wpa_supplicant/src/crypto
-INCLUDES += -I../../../component/common/api/network/include
-INCLUDES += -I../../../component/common/application
-INCLUDES += -I../../../component/common/application/mqtt/MQTTClient
-INCLUDES += -I../../../component/common/example
-INCLUDES += -I../../../component/common/utilities
-INCLUDES += -I../../../component/common/mbed/hal
-INCLUDES += -I../../../component/common/mbed/hal_ext
-INCLUDES += -I../../../component/common/mbed/targets/hal/rtl8710c
-INCLUDES += -I../../../component/common/network
-INCLUDES += -I../../../component/common/network/lwip/lwip_v2.1.3/src/include
-INCLUDES += -I../../../component/common/network/lwip/lwip_v2.1.3/src/include/lwip
-INCLUDES += -I../../../component/common/network/lwip/lwip_v2.1.3/port/realtek
-INCLUDES += -I../../../component/common/network/lwip/lwip_v2.1.3/port/realtek/freertos
-#INCLUDES += -I../../../component/common/network/ssl/mbedtls-2.4.0/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls_config
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls_utils
-#aws_mbedtls_config.h
-INCLUDES += -I../../../component/common/application/amazon-freertos
-INCLUDES += -I../../../component/common/network/ssl/ssl_ram_map/rom
-#INCLUDES += -I../../../component/common/drivers/wlan/realtek/include
-INCLUDES += -I../../../component/common/drivers/wlan/realtek/include
-INCLUDES += -I../../../component/common/drivers/wlan/realtek/include
-INCLUDES += -I../../../component/common/drivers/wlan/realtek/src/osdep
-INCLUDES += -I../../../component/common/drivers/wlan/realtek/src/core/option
-INCLUDES += -I../../../component/common/test
-INCLUDES += -I../../../component/soc/realtek/8710c/cmsis/rtl8710c/include
-INCLUDES += -I../../../component/soc/realtek/8710c/cmsis/rtl8710c/lib/include
-INCLUDES += -I../../../component/soc/realtek/8710c/fwlib/include
-INCLUDES += -I../../../component/soc/realtek/8710c/fwlib/lib/include
-INCLUDES += -I../../../component/soc/realtek/8710c/fwlib/wlan/realtek/include
-INCLUDES += -I../../../component/soc/realtek/8710c/cmsis/cmsis-core/include
-INCLUDES += -I../../../component/soc/realtek/8710c/app/rtl_printf/include
-INCLUDES += -I../../../component/soc/realtek/8710c/app/shell
-INCLUDES += -I../../../component/soc/realtek/8710c/app/stdio_port
-INCLUDES += -I../../../component/soc/realtek/8710c/misc/utilities/include
-INCLUDES += -I../../../component/soc/realtek/8710c/mbed-drivers/include
-INCLUDES += -I../../../component/soc/realtek/8710c/misc/platform
-INCLUDES += -I../../../component/soc/realtek/8710c/misc/driver
-INCLUDES += -I../../../component/soc/realtek/8710c/misc/os
+INCLUDES += -I$(SDKROOTDIR)/component/common/api
+INCLUDES += -I$(SDKROOTDIR)/component/common/api/platform
+INCLUDES += -I$(SDKROOTDIR)/component/common/api/wifi
+INCLUDES += -I$(SDKROOTDIR)/component/common/api/wifi/rtw_wpa_supplicant/src
+INCLUDES += -I$(SDKROOTDIR)/component/common/api/wifi/rtw_wpa_supplicant/src/crypto
+INCLUDES += -I$(SDKROOTDIR)/component/common/api/network/include
+INCLUDES += -I$(SDKROOTDIR)/component/common/application
+INCLUDES += -I$(SDKROOTDIR)/component/common/application/mqtt/MQTTClient
+INCLUDES += -I$(SDKROOTDIR)/component/common/example
+INCLUDES += -I$(SDKROOTDIR)/component/common/utilities
+INCLUDES += -I$(SDKROOTDIR)/component/common/mbed/hal
+INCLUDES += -I$(SDKROOTDIR)/component/common/mbed/hal_ext
+INCLUDES += -I$(SDKROOTDIR)/component/common/mbed/targets/hal/rtl8710c
+INCLUDES += -I$(SDKROOTDIR)/component/common/network
+INCLUDES += -I$(SDKROOTDIR)/component/common/network/lwip/lwip_v2.1.3/src/include
+INCLUDES += -I$(SDKROOTDIR)/component/common/network/lwip/lwip_v2.1.3/src/include/lwip
+INCLUDES += -I$(SDKROOTDIR)/component/common/network/lwip/lwip_v2.1.3/port/realtek
+INCLUDES += -I$(SDKROOTDIR)/component/common/network/lwip/lwip_v2.1.3/port/realtek/freertos
+INCLUDES += -I$(SDKROOTDIR)/component/common/network/ssl/ssl_ram_map/rom
+#INCLUDES += -I$(SDKROOTDIR)/component/common/drivers/wlan/realtek/include
+INCLUDES += -I$(SDKROOTDIR)/component/common/drivers/wlan/realtek/include
+INCLUDES += -I$(SDKROOTDIR)/component/common/drivers/wlan/realtek/include
+INCLUDES += -I$(SDKROOTDIR)/component/common/drivers/wlan/realtek/src/osdep
+INCLUDES += -I$(SDKROOTDIR)/component/common/drivers/wlan/realtek/src/core/option
+INCLUDES += -I$(SDKROOTDIR)/component/common/test
+INCLUDES += -I$(SDKROOTDIR)/component/soc/realtek/8710c/cmsis/rtl8710c/include
+INCLUDES += -I$(SDKROOTDIR)/component/soc/realtek/8710c/cmsis/rtl8710c/lib/include
+INCLUDES += -I$(SDKROOTDIR)/component/soc/realtek/8710c/fwlib/include
+INCLUDES += -I$(SDKROOTDIR)/component/soc/realtek/8710c/fwlib/lib/include
+INCLUDES += -I$(SDKROOTDIR)/component/soc/realtek/8710c/fwlib/wlan/realtek/include
+INCLUDES += -I$(SDKROOTDIR)/component/soc/realtek/8710c/cmsis/cmsis-core/include
+INCLUDES += -I$(SDKROOTDIR)/component/soc/realtek/8710c/app/rtl_printf/include
+INCLUDES += -I$(SDKROOTDIR)/component/soc/realtek/8710c/app/shell
+INCLUDES += -I$(SDKROOTDIR)/component/soc/realtek/8710c/app/stdio_port
+INCLUDES += -I$(SDKROOTDIR)/component/soc/realtek/8710c/misc/utilities/include
+INCLUDES += -I$(SDKROOTDIR)/component/soc/realtek/8710c/mbed-drivers/include
+INCLUDES += -I$(SDKROOTDIR)/component/soc/realtek/8710c/misc/platform
+INCLUDES += -I$(SDKROOTDIR)/component/soc/realtek/8710c/misc/driver
+INCLUDES += -I$(SDKROOTDIR)/component/soc/realtek/8710c/misc/os
 
-INCLUDES += -I../../../component/os/freertos
-#INCLUDES += -I../../../component/os/freertos/freertos_v10.0.1/Source/include
-#INCLUDES += -I../../../component/os/freertos/freertos_v10.0.1/Source/portable/GCC/ARM_RTL8710C
-##os - freertos 10.4.3 start
-INCLUDES += -I../../../component/os/freertos/freertos_v10.4.3/include
-INCLUDES += -I../../../component/os/freertos/freertos_v10.4.3/portable/GCC/ARM_CM33_NTZ/non_secure
-#os - freertos 10.4.3 end
-INCLUDES += -I../../../component/os/os_dep/include
-
-#Amazon Includes
-INCLUDES += -I../../../component/common/application/amazon-freertos/demos/device_defender_for_aws/
-INCLUDES += -I../../../component/common/application/amazon-freertos/demos/device_shadow_for_aws/
-INCLUDES += -I../../../component/common/application/amazon-freertos/demos/dev_mode_key_provisioning/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/demos/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/demos/network_manager
-INCLUDES += -I../../../component/common/application/amazon-freertos/demos/common/http_demo_helpers
-INCLUDES += -I../../../component/common/application/amazon-freertos/demos/common/mqtt_demo_helpers
-INCLUDES += -I../../../component/common/application/amazon-freertos/demos/common/pkcs11_helpers
-INCLUDES += -I../../../component/common/application/amazon-freertos/demos/common/mqtt_subscription_manager
-\INCLUDES += -I../../../component/common/application/amazon-freertos/demos/common/ota_demo_helpers
-#INCLUDES += -I../../../component/common/application/amazon-freertos/demos/fleet_provisioning_with_csr
-
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/freertos_plus/standard/utils/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/logging/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/abstractions/wifi/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/3rdparty/unity/src
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/3rdparty/unity/extras/fixture/src
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/c_sdk/standard/common/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/abstractions/platform/freertos/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/abstractions/platform/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/abstractions/secure_sockets/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/c_sdk/standard/common/include/private
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/corePKCS11/source/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/corePKCS11/source/dependency/3rdparty/pkcs11/published/2-40-errata-1
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/c_sdk/standard/common/include/private
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/c_sdk/standard/common/include/private
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/backoffAlgorithm/source/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/coreHTTP/source/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/coreHTTP/source/interface
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/coreHTTP/source/dependency/3rdparty/llhttp/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/abstractions/transport/secure_sockets
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/coreMQTT/source/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/3rdparty/jsmn
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/freertos_plus/aws/ota/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls_utils
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/freertos_plus/standard/crypto/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/c_sdk/aws/defender/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/c_sdk/standard/mqtt/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/c_sdk/standard/serializer/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/c_sdk/aws/shadow/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/c_sdk/standard/mqtt/test/access
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/coreHTTP/source/dependency/3rdparty/http_parser
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/c_sdk/standard/https/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/c_sdk/standard/https/test/access
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/c_sdk/standard/mqtt/src
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/c_sdk/standard/mqtt/test/mock
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/3rdparty/tinycbor/src
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/freertos_plus/aws/ota/src
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/freertos_plus/standard/tls/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/device_shadow_for_aws/source/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/coreJSON/source/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/freertos_plus/aws/ota/test
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/jobs_for_aws/source/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/jobs_for_aws/source/otaJobParser/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/device_defender_for_aws/source/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/ota_for_aws/source/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/ota_for_aws/source
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/ota_for_aws/source/portable
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/ota_for_aws/source/portable/os
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/mqtt_file_streams_for_aws/source/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/abstractions/mqtt_agent/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/coreMQTT-Agent/source/include
-#INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/fleet-provisioning/source/include
-INCLUDES += -I../../../component/common/application/amazon-freertos/libraries/common/abstractions/platform/include/platform
-
-INCLUDES += -I../../../component/common/application/amazon-freertos/ports/amebaZ2/config_files
-INCLUDES += -I../../../component/common/application/amazon-freertos/ports/amebaZ2/example
-INCLUDES += -I../../../component/common/application/amazon-freertos/ports/amebaZ2/ota
+INCLUDES += -I$(SDKROOTDIR)/component/os/freertos
+INCLUDES += -I$(SDKROOTDIR)/component/os/os_dep/include
 
 # Source file list
 # -------------------------------------------------------------------
@@ -170,231 +99,148 @@ SRC_C =
 ###libraries
 ##3rdparty
 #jsmn
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/jsmn/jsmn.c
-#amazon mbedtls
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/aes.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/aesni.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/arc4.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/aria.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/asn1parse.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/asn1write.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/base64.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/bignum.c
-#SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls_rtk/bignum.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/blowfish.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/camellia.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/ccm.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/certs.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/chacha20.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/chachapoly.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/cipher.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/cipher_wrap.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/cmac.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/constant_time.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/ctr_drbg.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/debug.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/des.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/dhm.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/ecdh.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/ecdsa.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/ecjpake.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/ecp.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/ecp_curves.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/entropy.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/entropy_poll.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/error.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/gcm.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/havege.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/hkdf.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/hmac_drbg.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/md.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/md2.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/md4.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/md5.c
-#SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/md_wrap.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/memory_buffer_alloc.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls_rtk/net_sockets.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/nist_kw.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/oid.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/padlock.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/pem.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/pk.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/pk_wrap.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/pkcs11.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/pkcs12.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/pkcs5.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/pkparse.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/pkwrite.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/platform.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/platform_util.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/poly1305.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/ripemd160.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/rsa.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/rsa_internal.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/sha1.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/sha256.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/sha512.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/ssl_cache.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/ssl_ciphersuites.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/ssl_cli.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/ssl_cookie.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/ssl_msg.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/ssl_srv.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/ssl_ticket.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/ssl_tls.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/threading.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/timing.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/version.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/version_features.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/x509.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/x509_create.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/x509_crl.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/x509_crt.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/x509_csr.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/x509write_crt.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/x509write_csr.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls/library/xtea.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/3rdparty/jsmn/jsmn.c
 #mbedtls_utils
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls_utils/mbedtls_error.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/mbedtls_utils/mbedtls_utils.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/3rdparty/mbedtls_utils/mbedtls_error.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/3rdparty/mbedtls_utils/mbedtls_utils.c
 #tinycbor
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/tinycbor/src/cborencoder.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/tinycbor/src/cborencoder_close_container_checked.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/tinycbor/src/cborerrorstrings.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/tinycbor/src/cborparser.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/tinycbor/src/cborparser_dup_string.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/tinycbor/src/cborpretty.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/tinycbor/src/cborpretty_stdio.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/3rdparty/tinycbor/src/cborvalidation.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/3rdparty/tinycbor/src/cborencoder.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/3rdparty/tinycbor/src/cborencoder_close_container_checked.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/3rdparty/tinycbor/src/cborerrorstrings.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/3rdparty/tinycbor/src/cborparser.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/3rdparty/tinycbor/src/cborparser_dup_string.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/3rdparty/tinycbor/src/cborpretty.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/3rdparty/tinycbor/src/cborpretty_stdio.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/3rdparty/tinycbor/src/cborvalidation.c
 ##abstractions
 #backoff_algorithm
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/backoffAlgorithm/source/backoff_algorithm.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/backoffAlgorithm/source/backoff_algorithm.c
 #mqtt_agent
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/common/abstractions/mqtt_agent/freertos_agent_message.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/common/abstractions/mqtt_agent/freertos_command_pool.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/common/abstractions/mqtt_agent/freertos_agent_message.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/common/abstractions/mqtt_agent/freertos_command_pool.c
 #pkcs11
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/corePKCS11/source/portable/mbedtls/core_pkcs11_mbedtls.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/corePKCS11/source/core_pkcs11.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/corePKCS11/source/core_pki_utils.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/corePKCS11/source/portable/mbedtls/core_pkcs11_mbedtls.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/corePKCS11/source/core_pkcs11.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/corePKCS11/source/core_pki_utils.c
 #platform - freertos
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/common/abstractions/platform/freertos/iot_clock_freertos.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/common/abstractions/platform/freertos/iot_metrics.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/common/abstractions/platform/freertos/iot_network_freertos.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/common/abstractions/platform/freertos/iot_threads_freertos.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/common/abstractions/platform/freertos/iot_clock_freertos.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/common/abstractions/platform/freertos/iot_metrics.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/common/abstractions/platform/freertos/iot_network_freertos.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/common/abstractions/platform/freertos/iot_threads_freertos.c
 #transport - secure_sockets
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/common/abstractions/transport/secure_sockets/transport_secure_sockets.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/common/abstractions/transport/secure_sockets/transport_secure_sockets.c
 ##c_sdk
 #standard
 #common - taskpool
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/common/c_sdk/standard/common/taskpool/iot_taskpool.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/common/c_sdk/standard/common/taskpool/iot_taskpool_static_memory.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/common/c_sdk/standard/common/iot_device_metrics.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/common/c_sdk/standard/common/iot_init.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/common/c_sdk/standard/common/iot_static_memory_common.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/common/c_sdk/standard/common/taskpool/iot_taskpool.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/common/c_sdk/standard/common/taskpool/iot_taskpool_static_memory.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/common/c_sdk/standard/common/iot_device_metrics.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/common/c_sdk/standard/common/iot_init.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/common/c_sdk/standard/common/iot_static_memory_common.c
 ##coreHTTP
 #http_parser
-#SRC_C += ../../../component/common/application/amazon-freertos/libraries/coreHTTP/source/dependency/3rdparty/http_parser/http_parser.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/coreHTTP/source/core_http_client.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/coreHTTP/source/dependency/3rdparty/llhttp/src/api.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/coreHTTP/source/dependency/3rdparty/llhttp/src/http.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/coreHTTP/source/dependency/3rdparty/llhttp/src/llhttp.c
+#SRC_C += $(AWS_FREERTOS_DIR)/libraries/coreHTTP/source/dependency/3rdparty/http_parser/http_parser.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/coreHTTP/source/core_http_client.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/coreHTTP/source/dependency/3rdparty/llhttp/src/api.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/coreHTTP/source/dependency/3rdparty/llhttp/src/http.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/coreHTTP/source/dependency/3rdparty/llhttp/src/llhttp.c
 ##coreJSON
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/coreJSON/source/core_json.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/coreJSON/source/core_json.c
 ##coreMQTT
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/coreMQTT/source/core_mqtt.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/coreMQTT/source/core_mqtt_serializer.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/coreMQTT/source/core_mqtt_state.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/coreMQTT/source/core_mqtt.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/coreMQTT/source/core_mqtt_serializer.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/coreMQTT/source/core_mqtt_state.c
 ##coreMQTT-Agent
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/coreMQTT-Agent/source/core_mqtt_agent.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/coreMQTT-Agent/source/core_mqtt_agent_command_functions.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/coreMQTT-Agent/source/core_mqtt_agent.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/coreMQTT-Agent/source/core_mqtt_agent_command_functions.c
 ##device_shadow_for_aws
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/device_shadow_for_aws/source/shadow.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/device_shadow_for_aws/source/shadow.c
 ##device_defender_for_aws
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/device_defender_for_aws/source/defender.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/device_defender_for_aws/source/defender.c
 ##freertos_plus
 #standard
 #crypto
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/common/freertos_plus/standard/crypto/src/iot_crypto.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/common/freertos_plus/standard/crypto/src/iot_crypto.c
 #tls
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/common/freertos_plus/standard/tls/src/iot_tls.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/common/freertos_plus/standard/tls/src/iot_tls.c
 #utils
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/common/freertos_plus/standard/utils/src/iot_system_init.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/common/freertos_plus/standard/utils/src/iot_system_init.c
 ##jobs_for_aws
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/jobs_for_aws/source/jobs.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/jobs_for_aws/source/otaJobParser/job_parser.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/jobs_for_aws/source/otaJobParser/ota_job_handler.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/jobs_for_aws/source/jobs.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/jobs_for_aws/source/otaJobParser/job_parser.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/jobs_for_aws/source/otaJobParser/ota_job_handler.c
 ##logging
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/common/logging/iot_logging.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/common/logging/iot_logging_task_dynamic_buffers.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/common/logging/iot_logging.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/common/logging/iot_logging_task_dynamic_buffers.c
 ##ota_for_aws
 #os
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/ota_for_aws/source/portable/os/ota_os_freertos.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/ota_for_aws/source/ota.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/ota_for_aws/source/ota_base64.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/ota_for_aws/source/ota_cbor.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/ota_for_aws/source/ota_http.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/ota_for_aws/source/ota_interface.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/ota_for_aws/source/ota_mqtt.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/ota_for_aws/source/portable/os/ota_os_freertos.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/ota_for_aws/source/ota.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/ota_for_aws/source/ota_base64.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/ota_for_aws/source/ota_cbor.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/ota_for_aws/source/ota_http.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/ota_for_aws/source/ota_interface.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/ota_for_aws/source/ota_mqtt.c
 ##mqtt_file_streams_for_aws
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/mqtt_file_streams_for_aws/source/MQTTFileDownloader_base64.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/mqtt_file_streams_for_aws/source/MQTTFileDownloader_cbor.c
-SRC_C += ../../../component/common/application/amazon-freertos/libraries/mqtt_file_streams_for_aws/source/MQTTFileDownloader.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/mqtt_file_streams_for_aws/source/MQTTFileDownloader_base64.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/mqtt_file_streams_for_aws/source/MQTTFileDownloader_cbor.c
+SRC_C += $(AWS_FREERTOS_DIR)/libraries/mqtt_file_streams_for_aws/source/MQTTFileDownloader.c
 #fleet-provisioning
-#SRC_C += ../../../component/common/application/amazon-freertos/libraries/fleet-provisioning/source/fleet_provisioning.c
+#SRC_C += $(AWS_FREERTOS_DIR)/libraries/fleet-provisioning/source/fleet_provisioning.c
 
 ###vendor
 ##port
-SRC_C += ../../../component/common/application/amazon-freertos/ports/amebaZ2/ota/aws_ota_amebaZ2.c
-SRC_C += ../../../component/common/application/amazon-freertos/ports/amebaZ2/ota/aws_ota_streams_amebaZ2.c
-SRC_C += ../../../component/common/application/amazon-freertos/ports/amebaZ2/ota/ota_pal.c
-SRC_C += ../../../component/common/application/amazon-freertos/ports/amebaZ2/ota/ota_pal_streams.c
-SRC_C += ../../../component/common/application/amazon-freertos/ports/amebaZ2/pkcs11/core_pkcs11_pal.c
-SRC_C += ../../../component/common/application/amazon-freertos/ports/amebaZ2/secure_sockets/iot_secure_sockets.c
-SRC_C += ../../../component/common/application/amazon-freertos/ports/amebaZ2/wifi/iot_wifi.c
+SRC_C += $(AWS_FREERTOS_DIR)/ports/amebaZ2/ota/aws_ota_amebaZ2.c
+SRC_C += $(AWS_FREERTOS_DIR)/ports/amebaZ2/ota/aws_ota_streams_amebaZ2.c
+SRC_C += $(AWS_FREERTOS_DIR)/ports/amebaZ2/ota/ota_pal.c
+SRC_C += $(AWS_FREERTOS_DIR)/ports/amebaZ2/ota/ota_pal_streams.c
+SRC_C += $(AWS_FREERTOS_DIR)/ports/amebaZ2/pkcs11/core_pkcs11_pal.c
+SRC_C += $(AWS_FREERTOS_DIR)/ports/amebaZ2/secure_sockets/iot_secure_sockets.c
+SRC_C += $(AWS_FREERTOS_DIR)/ports/amebaZ2/wifi/iot_wifi.c
 
 ##amazon_freertos_LTS - demos
 #common
-SRC_C += ../../../component/common/application/amazon-freertos/demos/common/http_demo_helpers/http_demo_utils.c
-SRC_C += ../../../component/common/application/amazon-freertos/demos/common/mqtt_demo_helpers/mqtt_demo_helpers.c
-SRC_C += ../../../component/common/application/amazon-freertos/demos/common/mqtt_subscription_manager/mqtt_subscription_manager.c
-SRC_C += ../../../component/common/application/amazon-freertos/demos/common/ota_demo_helpers/ota_application_version.c
-SRC_C += ../../../component/common/application/amazon-freertos/demos/common/pkcs11_helpers/pkcs11_helpers.c
+SRC_C += $(AWS_FREERTOS_DIR)/demos/common/http_demo_helpers/http_demo_utils.c
+SRC_C += $(AWS_FREERTOS_DIR)/demos/common/mqtt_demo_helpers/mqtt_demo_helpers.c
+SRC_C += $(AWS_FREERTOS_DIR)/demos/common/mqtt_subscription_manager/mqtt_subscription_manager.c
+SRC_C += $(AWS_FREERTOS_DIR)/demos/common/ota_demo_helpers/ota_application_version.c
+SRC_C += $(AWS_FREERTOS_DIR)/demos/common/pkcs11_helpers/pkcs11_helpers.c
 #coreHTTP
-SRC_C += ../../../component/common/application/amazon-freertos/demos/coreHTTP/http_demo_mutual_auth.c
+SRC_C += $(AWS_FREERTOS_DIR)/demos/coreHTTP/http_demo_mutual_auth.c
 #coreMQTT
-SRC_C += ../../../component/common/application/amazon-freertos/demos/coreMQTT/mqtt_demo_mutual_auth.c
+SRC_C += $(AWS_FREERTOS_DIR)/demos/coreMQTT/mqtt_demo_mutual_auth.c
 #coreMQTT_Agent
-SRC_C += ../../../component/common/application/amazon-freertos/demos/coreMQTT_Agent/mqtt_agent_task.c
-SRC_C += ../../../component/common/application/amazon-freertos/demos/coreMQTT_Agent/simple_sub_pub_demo.c
-SRC_C += ../../../component/common/application/amazon-freertos/demos/coreMQTT_Agent/subscription_manager.c
+SRC_C += $(AWS_FREERTOS_DIR)/demos/coreMQTT_Agent/mqtt_agent_task.c
+SRC_C += $(AWS_FREERTOS_DIR)/demos/coreMQTT_Agent/simple_sub_pub_demo.c
+SRC_C += $(AWS_FREERTOS_DIR)/demos/coreMQTT_Agent/subscription_manager.c
 #dev_mode_key_provisioning
-SRC_C += ../../../component/common/application/amazon-freertos/demos/dev_mode_key_provisioning/src/aws_dev_mode_key_provisioning.c
+SRC_C += $(AWS_FREERTOS_DIR)/demos/dev_mode_key_provisioning/src/aws_dev_mode_key_provisioning.c
 #device_shadow_for_aws
-SRC_C += ../../../component/common/application/amazon-freertos/demos/device_shadow_for_aws/shadow_demo_main.c
+SRC_C += $(AWS_FREERTOS_DIR)/demos/device_shadow_for_aws/shadow_demo_main.c
 #device_defender_for_aws
-SRC_C += ../../../component/common/application/amazon-freertos/demos/device_defender_for_aws/metrics_collector/lwip/metrics_collector.c
-SRC_C += ../../../component/common/application/amazon-freertos/demos/device_defender_for_aws/defender_demo.c
-SRC_C += ../../../component/common/application/amazon-freertos/demos/device_defender_for_aws/report_builder.c
+SRC_C += $(AWS_FREERTOS_DIR)/demos/device_defender_for_aws/metrics_collector/lwip/metrics_collector.c
+SRC_C += $(AWS_FREERTOS_DIR)/demos/device_defender_for_aws/defender_demo.c
+SRC_C += $(AWS_FREERTOS_DIR)/demos/device_defender_for_aws/report_builder.c
 #jobs_for_aws
-SRC_C += ../../../component/common/application/amazon-freertos/demos/jobs_for_aws/jobs_demo.c
+SRC_C += $(AWS_FREERTOS_DIR)/demos/jobs_for_aws/jobs_demo.c
 #network_manager
-SRC_C += ../../../component/common/application/amazon-freertos/demos/network_manager/aws_iot_network_manager.c
+SRC_C += $(AWS_FREERTOS_DIR)/demos/network_manager/aws_iot_network_manager.c
 #ota
-SRC_C += ../../../component/common/application/amazon-freertos/demos/ota/ota_demo_core_mqtt/ota_demo_core_mqtt.c
+SRC_C += $(AWS_FREERTOS_DIR)/demos/ota/ota_demo_core_mqtt/ota_demo_core_mqtt.c
 #mqtt_streams_for_ota
-SRC_C += ../../../component/common/application/amazon-freertos/demos/ota/ota_demo_mqtt_streams/ota_demo_mqtt_streams.c
-SRC_C += ../../../component/common/application/amazon-freertos/demos/ota/ota_demo_mqtt_streams/mqtt_agent_task.c
-SRC_C += ../../../component/common/application/amazon-freertos/demos/ota/ota_demo_mqtt_streams/mqtt_wrapper.c
-SRC_C += ../../../component/common/application/amazon-freertos/demos/ota/ota_demo_mqtt_streams/ota_event_freertos.c
-#SRC_C += ../../../component/common/application/amazon-freertos/demos/ota/ota_demo_core_http/ota_demo_core_http.c
+SRC_C += $(AWS_FREERTOS_DIR)/demos/ota/ota_demo_mqtt_streams/ota_demo_mqtt_streams.c
+SRC_C += $(AWS_FREERTOS_DIR)/demos/ota/ota_demo_mqtt_streams/mqtt_agent_task.c
+SRC_C += $(AWS_FREERTOS_DIR)/demos/ota/ota_demo_mqtt_streams/mqtt_wrapper.c
+SRC_C += $(AWS_FREERTOS_DIR)/demos/ota/ota_demo_mqtt_streams/ota_event_freertos.c
+#SRC_C += $(AWS_FREERTOS_DIR)/demos/ota/ota_demo_core_http/ota_demo_core_http.c
 
-SRC_C += ../../../component/common/application/amazon-freertos/ports/amebaZ2/example/aws_main/aws_main.c
-SRC_C += ../../../component/common/application/amazon-freertos/ports/amebaZ2/example/example_amazon_freertos.c
+SRC_C += $(AWS_FREERTOS_DIR)/ports/amebaZ2/example/aws_main/aws_main.c
+SRC_C += $(AWS_FREERTOS_DIR)/ports/amebaZ2/example/example_amazon_freertos.c
 
 #fleet_provisioning_with_csr
-#SRC_C += ../../../component/common/application/amazon-freertos/demos/fleet_provisioning_with_csr/fleet_provisioning_demo.c
-#SRC_C += ../../../component/common/application/amazon-freertos/demos/fleet_provisioning_with_csr/pkcs11_operations.c
-#SRC_C += ../../../component/common/application/amazon-freertos/demos/fleet_provisioning_with_csr/tinycbor_serializer.c
+#SRC_C += $(AWS_FREERTOS_DIR)/demos/fleet_provisioning_with_csr/fleet_provisioning_demo.c
+#SRC_C += $(AWS_FREERTOS_DIR)/demos/fleet_provisioning_with_csr/pkcs11_operations.c
+#SRC_C += $(AWS_FREERTOS_DIR)/demos/fleet_provisioning_with_csr/tinycbor_serializer.c
 
 #lib_version
 VER_C += $(TARGET)_version.c
@@ -419,10 +265,10 @@ CFLAGS += -fdiagnostics-color=always -Wall -Wpointer-arith -Wstrict-prototypes -
 CFLAGS += -Wno-maybe-uninitialized --save-temps -c -MMD
 CFLAGS += -DCONFIG_PLATFORM_8710C -DCONFIG_BUILD_RAM=1
 CFLAGS += -DV8M_STKOVF
-CFLAGS += -DCONFIG_AMAZON_FREERTOS=1
-CFLAGS += -DMBEDTLS_CONFIG_FILE=\"aws_mbedtls_config.h\"
 
 include toolchain.mk
+
+include $(AWS_INCLUDE_HDR)
 
 # Compile
 # -------------------------------------------------------------------

@@ -1,0 +1,99 @@
+
+include $(AWS_INCLUDE)
+
+# AWS Includes
+# -------------------------------------------------------------------
+
+#aws - demos
+INCLUDES += -I$(AWS_FREERTOS_DIR)/demos/common/http_demo_helpers
+INCLUDES += -I$(AWS_FREERTOS_DIR)/demos/common/mqtt_demo_helpers
+INCLUDES += -I$(AWS_FREERTOS_DIR)/demos/common/mqtt_subscription_manager
+INCLUDES += -I$(AWS_FREERTOS_DIR)/demos/common/ota_demo_helpers
+INCLUDES += -I$(AWS_FREERTOS_DIR)/demos/common/pkcs11_helpers
+INCLUDES += -I$(AWS_FREERTOS_DIR)/demos/dev_mode_key_provisioning/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/demos/device_defender_for_aws
+INCLUDES += -I$(AWS_FREERTOS_DIR)/demos/device_shadow_for_aws/
+#INCLUDES += -I$(AWS_FREERTOS_DIR)/demos/fleet_provisioning_with_csr
+INCLUDES += -I$(AWS_FREERTOS_DIR)/demos/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/demos/network_manager
+
+#aws - 3rdparty
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/3rdparty/jsmn
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/3rdparty/mbedtls_utils
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/3rdparty/mbedtls_config
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/3rdparty/tinycbor/src
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/3rdparty/unity/src
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/3rdparty/unity/extras/fixture/src
+INCLUDES += -I$(AWS_MBEDTLSDIR)/include
+
+#aws - other libraries
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/backoffAlgorithm/source/include
+
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/abstractions/backoff_algorithm/source/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/abstractions/mqtt_agent/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/abstractions/platform/freertos/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/abstractions/platform/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/abstractions/platform/include/platform
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/abstractions/secure_sockets/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/abstractions/transport/secure_sockets
+
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/c_sdk/aws/defender/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/c_sdk/aws/shadow/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/c_sdk/standard/common/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/c_sdk/standard/common/include/private
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/c_sdk/standard/https/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/c_sdk/standard/https/test/access
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/c_sdk/standard/mqtt/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/c_sdk/standard/mqtt/src
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/c_sdk/standard/mqtt/test/access
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/c_sdk/standard/mqtt/test/mock
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/c_sdk/standard/serializer/include
+
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/coreHTTP/source/dependency/3rdparty/http_parser
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/coreHTTP/source/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/coreHTTP/source/interface
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/coreJSON/source/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/coreMQTT/source/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/coreMQTT-Agent/source/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/corePKCS11/source/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/corePKCS11/source/dependency/3rdparty/pkcs11/published/2-40-errata-1
+
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/device_defender_for_aws/source/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/device_shadow_for_aws/source/include
+
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/freertos_plus/aws/ota/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/freertos_plus/aws/ota/src
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/freertos_plus/aws/ota/test
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/freertos_plus/standard/crypto/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/freertos_plus/standard/tls/include
+
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/jobs_for_aws/source/include
+
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/ota_for_aws/source
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/ota_for_aws/source/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/ota_for_aws/source/portable
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/ota_for_aws/source/portable/os
+
+INCLUDES += -I$(AWS_FREERTOS_DIR)/ports/amebaZ2/config_files
+INCLUDES += -I$(AWS_FREERTOS_DIR)/ports/amebaZ2/example
+INCLUDES += -I$(AWS_FREERTOS_DIR)/ports/amebaZ2/ota
+
+#aws - for lib_amazon.mk
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/abstractions/wifi/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/freertos_plus/aws/ota/src
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/freertos_plus/aws/ota/test
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/freertos_plus/standard/crypto/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/freertos_plus/standard/tls/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/freertos_plus/standard/utils/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/common/logging/include
+
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/coreHTTP/source/dependency/3rdparty/llhttp/include
+
+#INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/fleet-provisioning/source/include
+
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/jobs_for_aws/source/otaJobParser/include
+INCLUDES += -I$(AWS_FREERTOS_DIR)/libraries/mqtt_file_streams_for_aws/source/include
+
+#aws - os - freertos 10.4.3
+INCLUDES += -I$(AWS_FREERTOSDIR)/include
+INCLUDES += -I$(AWS_FREERTOSDIR)/portable/GCC/ARM_CM33_NTZ/non_secure
