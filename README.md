@@ -64,40 +64,19 @@ This repository uses Mbed TLS under Apache 2.0
 # Support list
 
 ## AmebaZ2
-Work with
-
-sdk-ameba-v7.1e-rc.zip +
-
-7.1e_patch_support_amazon_v202406_LTS_mbedtls363_iNA_r250618_(v01).zip
+To get the SDK that supports AWS, please contact Realtek FAE!
 
 ## AmebaD
-Work with 
-
-sdk-amebad_v6.2C-RC.tar.gz + 
-
-6.2_patch_integrated_250626_15692ffb.zip
-
-6.2c_patch_Support_Amazon_v202406_LTS_mbedtls363_i250626_r250818_(v02).zip
+To get the SDK that supports AWS, please contact Realtek FAE!
 
 ## AmebaDplus
-Work with
-
-sdk-ameba-rtos_v1.1.zip +
-
-1.1_patch_dplus_and_lite_amazon_v202406-LTS_w_mbed363_iNA_r250806_v01.zip
+To get the SDK that supports AWS, please contact Realtek FAE!
 
 ## AmebaLite
-Work with
-
-sdk-ameba-rtos_v1.1.zip +
-
-1.1_patch_dplus_and_lite_amazon_v202406-LTS_w_mbed363_iNA_r250806_v01.zip
-
+To get the SDK that supports AWS, please contact Realtek FAE!
 
 ## AmebaSmart
-Work with
-
-(WIP!)
+To get the SDK that supports AWS, please contact Realtek FAE!
 
 # History link
 
