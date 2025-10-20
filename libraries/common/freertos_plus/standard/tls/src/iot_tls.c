@@ -314,6 +314,7 @@ static int prvCheckCertificate( void * pvContext,
  * @param[in] pucHash Length in bytes of hash to be signed.
  * @param[in] uiHashLen Byte array of hash to be signed.
  * @param[out] pucSig RSA signature bytes.
+ * @param[in] pxSigSize  Size in bytes of signature buffer (for mbedtls-3.x.x and above)
  * @param[in] pxSigLen Length in bytes of signature buffer.
  * @param[in] piRng Unused.
  * @param[in] pvRng Unused.
@@ -325,6 +326,9 @@ static int prvPrivateKeySigningCallback( void * pvContext,
                                          const unsigned char * pucHash,
                                          size_t xHashLen,
                                          unsigned char * pucSig,
+#if MBEDTLS_VERSION_MAJOR >= 3 && MBEDTLS_VERSION_MINOR >= 6
+                                         size_t * pxSigSize,
+#endif
                                          size_t * pxSigLen,
                                          int ( * piRng )( void *,
                                                           unsigned char *,
@@ -333,7 +337,8 @@ static int prvPrivateKeySigningCallback( void * pvContext,
 {
     CK_RV xResult = CKR_OK;
     int lFinalResult = 0;
-    TLSContext_t * pxTLSContext = ( TLSContext_t * ) pvContext;
+    mbedtls_pk_context * pxPKContext = (mbedtls_pk_context *) pvContext;
+    TLSContext_t * pxTLSContext = ( TLSContext_t * ) pxPKContext->pk_ctx;
     CK_MECHANISM xMech = { 0 };
     CK_BYTE xToBeSigned[ 256 ];
     CK_ULONG xToBeSignedLen = sizeof( xToBeSigned );
