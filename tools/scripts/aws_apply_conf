@@ -1,0 +1,18 @@
+#!/bin/bash -l
+
+PATH_TO_AMEBA_RTOS=$(cat .PATH_TO_AMEBA_RTOS)
+AMEBA_PY="python $PATH_TO_AMEBA_RTOS/ameba.py"
+
+PATH_TO_AMEBA_AMAZON_FREERTOS="$PWD"
+AWS_PROJ_CONFIG="$PATH_TO_AMEBA_AMAZON_FREERTOS/project/cmake/config/aws_proj.conf"
+SOC_INFO_JSON="$PATH_TO_AMEBA_AMAZON_FREERTOS/soc_info.json"
+
+if [ ! -e "$SOC_INFO_JSON" ]; then
+  echo "$SOC_INFO_JSON does not exist, please run \`ameba.py soc\` and choose the SoC for your project."
+else
+  echo "Enabling AWS in menuconfig..."
+  $AMEBA_PY menuconfig -f "$AWS_PROJ_CONFIG"
+  echo "The following configurations has been enabled:"
+  cat "$AWS_PROJ_CONFIG"
+  echo "If you need to modify the menuconfig, please run \`ameba.py menuconfig\`"
+fi

@@ -61,6 +61,9 @@
 #include "mbedtls/pk.h"
 #include "mbedtls/oid.h"
 
+/* logging includes. */
+#include "iot_logging_task.h"
+
 #if MBEDTLS_VERSION_MAJOR >= 3 && MBEDTLS_VERSION_MINOR >= 6
 #if defined(CONFIG_AMEBAZ2) || defined(CONFIG_AMEBAD)
 #include "osdep_service.h"

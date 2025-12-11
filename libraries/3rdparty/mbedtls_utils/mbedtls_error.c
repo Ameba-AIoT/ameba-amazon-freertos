@@ -141,7 +141,11 @@
 #endif
 
 #if defined( MBEDTLS_PADLOCK_C )
+#if MBEDTLS_VERSION_MAJOR <= 2
     #include "mbedtls/padlock.h"
+#else
+    #include "mbedtls/library/padlock.h"
+#endif
 #endif
 
 #if defined( MBEDTLS_PEM_PARSE_C ) || defined( MBEDTLS_PEM_WRITE_C )
@@ -293,11 +297,11 @@ const char * mbedtls_strerror_highlevel( int errnum )
                 case -( MBEDTLS_ERR_DHM_FILE_IO_ERROR ):
                     rc = "DHM - Read or write of file failed";
                     break;
-
+#if MBEDTLS_VERSION_MAJOR <= 2
                 case -( MBEDTLS_ERR_DHM_HW_ACCEL_FAILED ):
                     rc = "DHM - DHM hardware accelerator failed";
                     break;
-
+#endif
                 case -( MBEDTLS_ERR_DHM_SET_GROUP_FAILED ):
                     rc = "DHM - Setting the modulus and generator failed";
                     break;
@@ -920,7 +924,7 @@ const char * mbedtls_strerror_lowlevel( int errnum )
             case -( MBEDTLS_ERR_ARIA_INVALID_INPUT_LENGTH ):
                 rc = "ARIA - Invalid data input length";
                 break;
-
+#if MBEDTLS_VERSION_MAJOR <= 2
             case -( MBEDTLS_ERR_ARIA_FEATURE_UNAVAILABLE ):
                 rc = "ARIA - Feature not available. For example, an unsupported ARIA key size";
                 break;
@@ -928,6 +932,7 @@ const char * mbedtls_strerror_lowlevel( int errnum )
             case -( MBEDTLS_ERR_ARIA_HW_ACCEL_FAILED ):
                 rc = "ARIA - ARIA hardware accelerator failed";
                 break;
+#endif
         #endif /* MBEDTLS_ARIA_C */
 
         #if defined( MBEDTLS_ASN1_PARSE_C )
@@ -1026,10 +1031,11 @@ const char * mbedtls_strerror_lowlevel( int errnum )
             case -( MBEDTLS_ERR_CAMELLIA_INVALID_INPUT_LENGTH ):
                 rc = "CAMELLIA - Invalid data input length";
                 break;
-
+#if MBEDTLS_VERSION_MAJOR <= 2
             case -( MBEDTLS_ERR_CAMELLIA_HW_ACCEL_FAILED ):
                 rc = "CAMELLIA - Camellia hardware accelerator failed";
                 break;
+#endif
         #endif /* MBEDTLS_CAMELLIA_C */
 
         #if defined( MBEDTLS_CCM_C )
@@ -1040,17 +1046,18 @@ const char * mbedtls_strerror_lowlevel( int errnum )
             case -( MBEDTLS_ERR_CCM_AUTH_FAILED ):
                 rc = "CCM - Authenticated decryption failed";
                 break;
-
+#if MBEDTLS_VERSION_MAJOR <= 2
             case -( MBEDTLS_ERR_CCM_HW_ACCEL_FAILED ):
                 rc = "CCM - CCM hardware accelerator failed";
                 break;
+#endif
         #endif /* MBEDTLS_CCM_C */
 
         #if defined( MBEDTLS_CHACHA20_C )
             case -( MBEDTLS_ERR_CHACHA20_BAD_INPUT_DATA ):
                 rc = "CHACHA20 - Invalid input parameter(s)";
                 break;
-
+#if MBEDTLS_VERSION_MAJOR <= 2
             case -( MBEDTLS_ERR_CHACHA20_FEATURE_UNAVAILABLE ):
                 rc = "CHACHA20 - Feature not available. For example, s part of the API is not implemented";
                 break;
@@ -1058,6 +1065,7 @@ const char * mbedtls_strerror_lowlevel( int errnum )
             case -( MBEDTLS_ERR_CHACHA20_HW_ACCEL_FAILED ):
                 rc = "CHACHA20 - Chacha20 hardware accelerator failed";
                 break;
+#endif
         #endif /* MBEDTLS_CHACHA20_C */
 
         #if defined( MBEDTLS_CHACHAPOLY_C )
@@ -1100,10 +1108,11 @@ const char * mbedtls_strerror_lowlevel( int errnum )
             case -( MBEDTLS_ERR_DES_INVALID_INPUT_LENGTH ):
                 rc = "DES - The data input has an invalid length";
                 break;
-
+#if MBEDTLS_VERSION_MAJOR <= 2
             case -( MBEDTLS_ERR_DES_HW_ACCEL_FAILED ):
                 rc = "DES - DES hardware accelerator failed";
                 break;
+#endif
         #endif /* MBEDTLS_DES_C */
 
         #if defined( MBEDTLS_ENTROPY_C )
@@ -1179,9 +1188,11 @@ const char * mbedtls_strerror_lowlevel( int errnum )
         #endif /* MBEDTLS_MD4_C */
 
         #if defined( MBEDTLS_MD5_C )
+#if MBEDTLS_VERSION_MAJOR <= 2
             case -( MBEDTLS_ERR_MD5_HW_ACCEL_FAILED ):
                 rc = "MD5 - MD5 hardware accelerator failed";
                 break;
+#endif
         #endif /* MBEDTLS_MD5_C */
 
         #if defined( MBEDTLS_NET_C )
@@ -1271,6 +1282,7 @@ const char * mbedtls_strerror_lowlevel( int errnum )
                 rc = "POLY1305 - Invalid input parameter(s)";
                 break;
 
+#if MBEDTLS_VERSION_MAJOR <= 2
             case -( MBEDTLS_ERR_POLY1305_FEATURE_UNAVAILABLE ):
                 rc = "POLY1305 - Feature not available. For example, s part of the API is not implemented";
                 break;
@@ -1278,6 +1290,7 @@ const char * mbedtls_strerror_lowlevel( int errnum )
             case -( MBEDTLS_ERR_POLY1305_HW_ACCEL_FAILED ):
                 rc = "POLY1305 - Poly1305 hardware accelerator failed";
                 break;
+#endif
         #endif /* MBEDTLS_POLY1305_C */
 
         #if defined( MBEDTLS_RIPEMD160_C )
@@ -1309,10 +1322,11 @@ const char * mbedtls_strerror_lowlevel( int errnum )
         #endif /* MBEDTLS_SHA256_C */
 
         #if defined( MBEDTLS_SHA512_C )
+#if MBEDTLS_VERSION_MAJOR <= 2
             case -( MBEDTLS_ERR_SHA512_HW_ACCEL_FAILED ):
                 rc = "SHA512 - SHA-512 hardware accelerator failed";
                 break;
-
+#endif
             case -( MBEDTLS_ERR_SHA512_BAD_INPUT_DATA ):
                 rc = "SHA512 - SHA-512 input data was malformed";
                 break;

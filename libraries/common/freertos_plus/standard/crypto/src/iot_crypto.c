@@ -99,6 +99,7 @@ typedef struct SignatureVerificationState
 /*--------------- See MBEDTLS_THREADING_ALT -----------------*/
 /*-----------------------------------------------------------*/
 
+#if (defined(CONFIG_MBEDTLS_AMAZON_DEFINED) && (CONFIG_MBEDTLS_AMAZON_DEFINED == 1))
 /**
  * @brief Implementation of mbedtls_mutex_init for thread-safety.
  *
@@ -182,6 +183,7 @@ int aws_mbedtls_mutex_unlock( mbedtls_threading_mutex_t * mutex )
 
     return ret;
 }
+#endif // (defined(CONFIG_MBEDTLS_AMAZON_DEFINED) && (CONFIG_MBEDTLS_AMAZON_DEFINED == 1))
 
 /*-----------------------------------------------------------*/
 
@@ -260,10 +262,12 @@ static BaseType_t prvVerifySignature( char * pcSignerCertificate,
 void CRYPTO_ConfigureThreading( void )
 {
     /* Configure mbedtls to use FreeRTOS mutexes. */
+#if (defined(CONFIG_MBEDTLS_AMAZON_DEFINED) && (CONFIG_MBEDTLS_AMAZON_DEFINED == 1))
     mbedtls_threading_set_alt( aws_mbedtls_mutex_init,
                                aws_mbedtls_mutex_free,
                                aws_mbedtls_mutex_lock,
                                aws_mbedtls_mutex_unlock );
+#endif
 }
 
 /**

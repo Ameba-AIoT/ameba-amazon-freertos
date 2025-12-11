@@ -402,7 +402,8 @@
  *            digests and ciphers instead.
  *
  */
- //#define MBEDTLS_AES_ALT
+#if !(defined(CONFIG_MBEDTLS_AMAZON_DEFINED) && (CONFIG_MBEDTLS_AMAZON_DEFINED == 1))
+ #define MBEDTLS_AES_ALT
  //#define MBEDTLS_ARC4_ALT
  //#define MBEDTLS_ARIA_ALT
  //#define MBEDTLS_BLOWFISH_ALT
@@ -423,9 +424,10 @@
  //#define MBEDTLS_RIPEMD160_ALT
  //#define MBEDTLS_RSA_ALT
  //#define MBEDTLS_SHA1_ALT
- //#define MBEDTLS_SHA256_ALT
- //#define MBEDTLS_SHA512_ALT
+ #define MBEDTLS_SHA256_ALT
+ #define MBEDTLS_SHA512_ALT
  //#define MBEDTLS_XTEA_ALT
+#endif
 
 /*
  * When replacing the elliptic curve module, pleace consider, that it is
@@ -3341,7 +3343,9 @@
  * C standards (e.g using memset_s() in C11) or calling a secure memset() from
  * their system (e.g explicit_bzero() in BSD).
  */
-//#define MBEDTLS_PLATFORM_ZEROIZE_ALT
+#if !(defined(CONFIG_MBEDTLS_AMAZON_DEFINED) && (CONFIG_MBEDTLS_AMAZON_DEFINED == 1))
+#define MBEDTLS_PLATFORM_ZEROIZE_ALT
+#endif
 
 /**
  * Uncomment the macro to let Mbed TLS use your alternate implementation of

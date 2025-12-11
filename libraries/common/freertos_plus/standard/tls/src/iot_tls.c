@@ -34,6 +34,7 @@
 #include "aws_clientcredential_keys.h"
 #include "iot_default_root_certificates.h"
 #include "core_pki_utils.h"
+#include "iot_logging_task.h"
 
 /* mbedTLS includes. */
 #include "mbedtls/platform.h"
@@ -59,7 +60,11 @@
 #include "mbedtls/debug.h"
 
 #ifdef MBEDTLS_DEBUG_C
+#ifdef CONFIG_AMAZON_MBEDTLS_DEBUG_LEVEL
+    #define tlsDEBUG_VERBOSE    CONFIG_AMAZON_MBEDTLS_DEBUG_LEVEL
+#else
     #define tlsDEBUG_VERBOSE    4
+#endif
 #endif
 
 /* Custom mbedtls utls include. */
