@@ -305,7 +305,8 @@ static OtaPalStatus_t prvSignatureVerificationUpdate_rtl8721d(OtaFileContext_t *
 	/* read flash data back to check signature of the image */
 	for(i=0;i<len;i+=BUF_SIZE){
 		rlen = (len-i)>BUF_SIZE?BUF_SIZE:(len-i);
-		flash_stream_read(&flash, addr - SPI_FLASH_BASE+i+AWS_OTA_IMAGE_SIGNATURE_LEN, rlen, pTempbuf);
+		//flash_stream_read(&flash, addr - SPI_FLASH_BASE+i+AWS_OTA_IMAGE_SIGNATURE_LEN, rlen, pTempbuf);
+		ota_readstream_user(addr - SPI_FLASH_BASE + i + AWS_OTA_IMAGE_SIGNATURE_LEN, rlen, pTempbuf); // use USER mode to read back raw from Flash, skip SPIC
 		Cache_Flush();
 		CRYPTO_SignatureVerificationUpdate(pvContext, pTempbuf, rlen);
 	}
