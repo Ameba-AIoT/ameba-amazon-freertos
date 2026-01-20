@@ -140,6 +140,66 @@ bool prvPAL_Streams_CreateFileForRx_rtl8721d(AfrOtaJobDocumentFields_t *C)
 	return mainErr;
 }
 
+static bool rtl8721d_check_flash_ota_header_streams(void) {
+	u32 AddrStart, Offset, IsMinus, PhyAddr;
+	u32 CurrentImagePhysAddr, OtherOTAImagePhysAddr;
+	u32 ota_buffer[16];						/* contains the portion of the header. demonstrate reading the top 16 words */
+	u32 mmuRecord[2][4] = {{0, }, };		/* to hold a temporary record of the MMU config to restore */
+	u8 currentlyOnOTA2 = false;
+
+	/* is OTF enabled? */
+	u32 OTF_Enable = HAL_READ32(SYSTEM_CTRL_BASE_LP, REG_SYS_EFUSE_SYSCFG3) & BIT_SYS_FLASH_ENCRYPT_EN;
+
+	/* check which OTA we are on and which we need to check */
+	RSIP_REG_TypeDef* RSIP = ((RSIP_REG_TypeDef *) RSIP_REG_BASE);
+	u32 CtrlTemp = RSIP->FLASH_MMU[0].MMU_ENTRYx_CTRL;
+
+	/* read the MMU to obtain the image addresses */
+	if (CtrlTemp & MMU_BIT_ENTRY_VALID) {
+		AddrStart = RSIP->FLASH_MMU[0].MMU_ENTRYx_STRADDR;
+		Offset = RSIP->FLASH_MMU[0].MMU_ENTRYx_OFFSET;
+		IsMinus = CtrlTemp & MMU_BIT_ENTRY_OFFSET_MINUS;
+
+		if(IsMinus)
+			PhyAddr = AddrStart - Offset;
+		else
+			PhyAddr = AddrStart + Offset;
+
+		if(PhyAddr == LS_IMG2_OTA1_ADDR){
+			CurrentImagePhysAddr = LS_IMG2_OTA1_ADDR;
+			OtherOTAImagePhysAddr = LS_IMG2_OTA2_ADDR;
+			currentlyOnOTA2 = false;
+		}else{
+			CurrentImagePhysAddr = LS_IMG2_OTA2_ADDR;
+			OtherOTAImagePhysAddr = LS_IMG2_OTA1_ADDR;
+			currentlyOnOTA2 = true;
+		}
+	}
+
+	printf("[OTA] RSIP Enabled: %s\n", OTF_Enable ? "true" : "false");
+	printf("[OTA] Current on: %s, OTA on: %s\n", currentlyOnOTA2 ? "OTA2" : "OTA1", currentlyOnOTA2 ? "OTA1" : "OTA2");
+
+	/* map the physical address to virtual memory so that the CPU is able to read it */
+	mmu_save(0, &mmuRecord[0][0], &mmuRecord[0][1], &mmuRecord[0][2], &mmuRecord[0][3]);
+	FLASH_Write_Lock();
+	RSIP_MMU_Config(
+		0, 															/* use MMU entry #0 */
+		0x0C000000, 												/* map this address as virtual memory */
+		0x0C000000 + 4096 - 1,  									/* map exactly 0x1000 (1 page=4KB)*/
+		1, 															/* is negative offset (below) */
+		0x0C000000 - (OtherOTAImagePhysAddr - SPI_FLASH_BASE) 		/* the target physical address offset to map from */
+	);
+	memcpy(ota_buffer, 0x0C000000, sizeof(ota_buffer));				/* regular memcpy can be used after mapping*/
+	/* restore the MMU record after finish reading */
+	mmu_restore(0, &mmuRecord[0][0], &mmuRecord[0][1], &mmuRecord[0][2], &mmuRecord[0][3]);
+	FLASH_Write_Unlock();
+
+	/* check the header */
+	//vMemDump(OtherOTAImagePhysAddr, ota_buffer, sizeof(ota_buffer), "HEADER");
+
+	return true;
+}
+
 static OtaPalStatus_New_t prvPAL_Streams_SignatureVerificationUpdate_rtl8721d(AfrOtaJobDocumentFields_t *C, void * pvContext)
 {
 	(void) C;	// unused
@@ -210,6 +270,7 @@ OtaPalStatus_New_t prvPAL_Streams_CloseFile_rtl8721d(AfrOtaJobDocumentFields_t *
 
 	if ( mainErr == OtaPalSuccess_New ) {
 		OTA_PRINT("[%s] %s signature verification passed.\n", __FUNCTION__, OTA_SIG_KEY_STR);
+		//rtl8721d_check_flash_ota_header_streams();
 	} else {
 		OTA_PRINT("[%s] Failed to pass %s signature verification: %d.\n", __FUNCTION__, OTA_SIG_KEY_STR, mainErr);
 
@@ -468,6 +529,8 @@ OtaPalStatus_New_t prvPAL_Streams_CheckFileSignature_rtl8721d(AfrOtaJobDocumentF
 		prvPAL_Streams_SetPlatformImageState_rtl8721d(OtaImageStateRejected_New);
 		goto exit;
 	}
+
+	//rtl8721d_check_flash_ota_header_streams();
 
 exit:
 	/* Free the signer certificate that we now own after prvPAL_Streams_ReadAndAssumeCertificate(). */
