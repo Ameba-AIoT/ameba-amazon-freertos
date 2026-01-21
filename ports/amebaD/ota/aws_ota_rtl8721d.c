@@ -276,6 +276,36 @@ uint8_t * prvPAL_ReadAndAssumeCertificate_rtl8721d(const uint8_t * const pucCert
 	return pucSignerCert;
 }
 
+/**
+  * @brief  save default mmu config
+  * @retval none  
+  */
+static inline void mmu_save(u32 MMUIdx, u32 *vAddrSt, u32 *vAddrEnd, u32 *ctrl, u32 *offset)
+{
+	RSIP_REG_TypeDef* RSIP = ((RSIP_REG_TypeDef *) RSIP_REG_BASE);
+
+    /* save 4 registers */
+	*vAddrSt = RSIP->FLASH_MMU[MMUIdx].MMU_ENTRYx_STRADDR;
+	*vAddrEnd = RSIP->FLASH_MMU[MMUIdx].MMU_ENTRYx_ENDADDR;
+	*offset = RSIP->FLASH_MMU[MMUIdx].MMU_ENTRYx_OFFSET;
+	*ctrl =  RSIP->FLASH_MMU[MMUIdx].MMU_ENTRYx_CTRL;
+}
+
+/**
+  * @brief  restore default mmu config
+  * @retval none  
+  */
+static inline void mmu_restore(u32 MMUIdx, u32 *vAddrSt, u32 *vAddrEnd, u32 *ctrl, u32 *offset)
+{
+	RSIP_REG_TypeDef* RSIP = ((RSIP_REG_TypeDef *) RSIP_REG_BASE);
+
+    /* save 4 registers */
+	RSIP->FLASH_MMU[MMUIdx].MMU_ENTRYx_STRADDR = *vAddrSt;
+	RSIP->FLASH_MMU[MMUIdx].MMU_ENTRYx_ENDADDR = *vAddrEnd;
+	RSIP->FLASH_MMU[MMUIdx].MMU_ENTRYx_OFFSET = *offset;
+	RSIP->FLASH_MMU[MMUIdx].MMU_ENTRYx_CTRL = *ctrl;
+}
+
 static bool rtl8721d_check_flash_ota_header(void) {
 	u32 AddrStart, Offset, IsMinus, PhyAddr;
 	u32 CurrentImagePhysAddr, OtherOTAImagePhysAddr;
@@ -325,7 +355,7 @@ static bool rtl8721d_check_flash_ota_header(void) {
 		1, 															/* is negative offset (below) */
 		0x0C000000 - (OtherOTAImagePhysAddr - SPI_FLASH_BASE) 		/* the target physical address offset to map from */
 	);
-	memcpy(ota_buffer, 0x0C000000, sizeof(ota_buffer));				/* regular memcpy can be used after mapping*/
+	memcpy(ota_buffer, (void *)0x0C000000, sizeof(ota_buffer));				/* regular memcpy can be used after mapping*/
 	/* restore the MMU record after finish reading */
 	mmu_restore(0, &mmuRecord[0][0], &mmuRecord[0][1], &mmuRecord[0][2], &mmuRecord[0][3]);
 	FLASH_Write_Unlock();
