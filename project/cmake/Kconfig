@@ -1,0 +1,11 @@
+menu "Amazon FreeRTOS"
+    config AMAZON_FREERTOS_EN
+        bool "Build Amazon FreeRTOS SDK"
+        default n
+    if AMAZON_FREERTOS_EN
+        config AMAZON_MBEDTLS_DEBUG_LEVEL
+            int "Amazon MbedTLS Debug Level"
+            default 0
+            range 0 4
+    endif
+endmenu

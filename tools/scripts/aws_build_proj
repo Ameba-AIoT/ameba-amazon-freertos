@@ -1,0 +1,84 @@
+#!/bin/bash -l
+
+AWS_EXAMPLE=$1
+PATH_TO_AMEBA_RTOS=$(cat .PATH_TO_AMEBA_RTOS)
+AMEBA_PY="python $PATH_TO_AMEBA_RTOS/ameba.py"
+
+PATH_TO_AMEBA_AMAZON_FREERTOS="$PWD"
+SOC_INFO_JSON="$PATH_TO_AMEBA_AMAZON_FREERTOS/soc_info.json"
+
+valid_example=false
+
+aws_examples=(
+  "mqtt_mutual_auth"
+  "http_mutual_auth"
+  "device_shadow"
+  "device_defender"
+  "ota_over_mqtt"
+  "ota_over_mqtt_streams"
+)
+
+aws_config_files=(
+  "$PATH_TO_AMEBA_AMAZON_FREERTOS/demos/include/aws_clientcredential.h"
+  "$PATH_TO_AMEBA_AMAZON_FREERTOS/demos/include/aws_clientcredential_keys.h"
+  "$PATH_TO_AMEBA_AMAZON_FREERTOS/ports/config_files/ota_demo_config.h"
+)
+
+list_aws_examples() {
+  echo "Available AWS App examples:"
+  for aws_example in "${aws_examples[@]}"; do
+    echo "- $aws_example"
+  done
+}
+
+check_configuration_files() {
+  echo "Checking configuration files"
+  for file_path in "${aws_config_files[@]}"; do
+    if [ -e "$file_path" ]; then
+      file_updated=$(git diff "$file_path")
+      if [[ "$file_updated" ]]; then
+        echo "File $file_path updated."
+      else # Give warning to user because AWS example needs the credentials details to work.
+        echo "⚠️ ⚠️ ⚠️  File $file_path not updated!!! ⚠️ ⚠️ ⚠️"
+        echo "⚠️ ⚠️ ⚠️  File $file_path not updated!!! ⚠️ ⚠️ ⚠️"
+        echo "⚠️ ⚠️ ⚠️  File $file_path not updated!!! ⚠️ ⚠️ ⚠️"
+        sleep 3
+      fi
+    else
+      echo "File $file_path does not exist."
+    fi
+  done
+}
+
+if [ "$#" -lt 1 ]; then
+  echo "Usage: aws_build_proj <AWS App Example>"
+  list_aws_examples
+  exit 1
+else # check if AWS_EXAMPLE is valid
+  for aws_example in "${aws_examples[@]}"; do
+    if [[ "$aws_example" == "$AWS_EXAMPLE" ]]; then
+      valid_example=true
+      break
+    fi
+  done
+  if [[ "$valid_example" == "false" ]]; then
+    echo "Invalid AWS Example"
+    list_aws_examples
+    exit 1
+  fi
+fi
+
+check_configuration_files
+
+if [ -e "$SOC_INFO_JSON" ]; then
+  PATH_TO_MENUCONFIG_FOLDER="$PATH_TO_AMEBA_AMAZON_FREERTOS/build_$(python3 -c "import json; print(json.load(open('$SOC_INFO_JSON'))['soc']['name'])")/menuconfig"
+else
+  echo "$SOC_INFO_JSON does not exist, please run \`ameba.py soc\` and choose the SoC for your project."
+  exit 1
+fi
+
+if [ -d "$PATH_TO_MENUCONFIG_FOLDER" ]; then
+  $AMEBA_PY build -D EXAMPLE="$PWD" AWS_EXAMPLE=$AWS_EXAMPLE
+else
+  echo "$PATH_TO_MENUCONFIG_FOLDER does not exist, please run \`aws_menuconfig_proj\`or \`ameba.py menuconfig\` to set configurations for your project."
+fi

@@ -19,6 +19,7 @@ RemoteSystemsTempFiles/*
 
 # Ignore top-level build dir
 /build*/
+build_*
 
 # RTK
 *.dep
