@@ -56,13 +56,16 @@ ameba_list_append(private_sources
     ${AWS_CORE_MQTT_DIR}/source/core_mqtt.c
     ${AWS_CORE_MQTT_DIR}/source/core_mqtt_serializer.c
     ${AWS_CORE_MQTT_DIR}/source/core_mqtt_state.c
+    ${AWS_CORE_MQTT_DIR}/source/core_mqtt_serializer_private.c
+    ${AWS_CORE_MQTT_DIR}/source/core_mqtt_prop_serializer.c
+    ${AWS_CORE_MQTT_DIR}/source/core_mqtt_prop_deserializer.c
 )
 
-# coreMQTT Agent
-ameba_list_append(private_sources
-    ${AWS_CORE_MQTT_AGENT_DIR}/source/core_mqtt_agent.c
-    ${AWS_CORE_MQTT_AGENT_DIR}/source/core_mqtt_agent_command_functions.c
-)
+## coreMQTT Agent
+#ameba_list_append(private_sources
+#    ${AWS_CORE_MQTT_AGENT_DIR}/source/core_mqtt_agent.c
+#    ${AWS_CORE_MQTT_AGENT_DIR}/source/core_mqtt_agent_command_functions.c
+#)
 
 # corePKCS11
 ameba_list_append(private_sources
@@ -71,7 +74,7 @@ ameba_list_append(private_sources
     ${AWS_CORE_PKCS11_DIR}/source/core_pki_utils.c
 )
 
-# device defender
+## device defender
 ameba_list_append(private_sources
     ${AWS_DEVICE_DEFENDER_DIR}/source/defender.c
 )
@@ -90,13 +93,13 @@ ameba_list_append(private_sources
 
 # ota_for_aws
 ameba_list_append(private_sources
-    ${AWS_OTA_DIR}/source/portable/os/ota_os_freertos.c
-    ${AWS_OTA_DIR}/source/ota.c
-    ${AWS_OTA_DIR}/source/ota_base64.c
-    ${AWS_OTA_DIR}/source/ota_cbor.c
-    ${AWS_OTA_DIR}/source/ota_http.c
-    ${AWS_OTA_DIR}/source/ota_interface.c
-    ${AWS_OTA_DIR}/source/ota_mqtt.c
+    #${AWS_OTA_DIR}/source/portable/os/ota_os_freertos.c
+    #${AWS_OTA_DIR}/source/ota.c
+    #${AWS_OTA_DIR}/source/ota_base64.c
+    #${AWS_OTA_DIR}/source/ota_cbor.c
+    #${AWS_OTA_DIR}/source/ota_http.c
+    #${AWS_OTA_DIR}/source/ota_interface.c
+    #${AWS_OTA_DIR}/source/ota_mqtt.c
 )
 
 # mbedtls_utils

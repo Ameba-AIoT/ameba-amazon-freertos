@@ -586,9 +586,10 @@ static BaseType_t prvWaitForPacket( MQTTContext_t * pxMQTTContext,
     if( ( xMQTTStatus != MQTTSuccess ) || ( globalPacketTypeReceived != usPacketType ) )
     {
         xStatus = pdFAIL;
-        LogError( ( "MQTT_ProcessLoop failed to receive packet: Packet type=%02X, Status=%s",
+        LogError( ( "MQTT_ProcessLoop failed to receive packet: Packet type=%02X, Status=%s [%d]",
                     usPacketType,
-                    MQTT_Status_strerror( xMQTTStatus ) ) );
+                    MQTT_Status_strerror( xMQTTStatus ),
+                    xMQTTStatus ) );
     }
     else if( xMQTTStatus == MQTTNeedMoreBytes )
     {
@@ -639,6 +640,16 @@ BaseType_t SubscribeToTopic( MQTTContext_t * pxMqttContext,
                                        SUBSCRIBE_RETRY_MAX_BACKOFF_DELAY_MS,
                                        SUBSCRIBE_RETRY_MAX_ATTEMPTS );
 
+    /* MQTTv5: Create property builder to handle MQTTv5 properties */
+    MQTTPropBuilder_t propertyBuilder ;
+    uint8_t buf[100] ;
+    size_t bufLength = sizeof(buf);
+    MQTTPropertyBuilder_Init(&propertyBuilder, buf, bufLength) ;
+
+    /* MQTTv5: Add properties */
+    /* WARNING: AWS does not support subscription ID */
+    //MQTTPropAdd_SubscriptionId(&propertyBuilder, 1, &(uint8_t){ MQTT_PACKET_TYPE_SUBSCRIBE } );
+
     do
     {
         xSubscribeStatus = pdFAIL;
@@ -649,7 +660,8 @@ BaseType_t SubscribeToTopic( MQTTContext_t * pxMqttContext,
         xMqttStatus = MQTT_Subscribe( pxMqttContext,
                                       &xMQTTSubscription,
                                       sizeof( xMQTTSubscription ) / sizeof( MQTTSubscribeInfo_t ),
-                                      globalSubscribePacketIdentifier );
+                                      globalSubscribePacketIdentifier,
+                                      &propertyBuilder);
 
         if( xMqttStatus != MQTTSuccess )
         {
@@ -779,7 +791,6 @@ void vHandleOtherIncomingPacket( MQTTPacketInfo_t * pxPacketInfo,
     MQTTStatus_t xResult = MQTTSuccess;
     uint8_t * pucPayload = NULL;
     size_t xSize = 0;
-
     /* Handle other packets. */
     switch( pxPacketInfo->type )
     {
@@ -835,6 +846,10 @@ void vHandleOtherIncomingPacket( MQTTPacketInfo_t * pxPacketInfo,
             vCleanupOutgoingPublishWithPacketID( usPacketIdentifier );
             break;
 
+        case MQTT_PACKET_TYPE_CONNACK:
+            /* already handled by core_mqtt.c receiveConnack */
+            break;
+
         /* Any other packet type is invalid. */
         default:
             LogError( ( "Unknown packet type received:(%02x).\n\n",
@@ -852,6 +867,17 @@ static BaseType_t handlePublishResend( MQTTContext_t * pxMqttContext )
 
     assert( outgoingPublishPackets != NULL );
 
+    MQTTPropBuilder_t propertyBuilder = { 0 };
+    uint8_t propertyBuffer[100];
+
+    /* MQTTv5: Create property builder to handle MQTTv5 properties */
+    MQTTPropertyBuilder_Init(&propertyBuilder,
+                            propertyBuffer,
+                            sizeof(propertyBuffer));
+    /* MQTTv5: Add publish properties */                        
+    MQTTPropAdd_PayloadFormat(&propertyBuilder, 1, &(uint8_t){ MQTT_PACKET_TYPE_PUBLISH } );
+    MQTTPropAdd_TopicAlias(&propertyBuilder, 1, &(uint8_t){ MQTT_PACKET_TYPE_PUBLISH } );
+
     /* Resend all the QoS1 publishes still in the array. These are the
      * publishes that hasn't received a PUBACK. When a PUBACK is
      * received, the publish is removed from the array. */
@@ -865,7 +891,8 @@ static BaseType_t handlePublishResend( MQTTContext_t * pxMqttContext )
                        outgoingPublishPackets[ ucIndex ].packetId ) );
             eMqttStatus = MQTT_Publish( pxMqttContext,
                                         &outgoingPublishPackets[ ucIndex ].pubInfo,
-                                        outgoingPublishPackets[ ucIndex ].packetId );
+                                        outgoingPublishPackets[ ucIndex ].packetId,
+                                        &propertyBuilder );
 
             if( eMqttStatus != MQTTSuccess )
             {
@@ -934,11 +961,15 @@ BaseType_t EstablishMqttSession( MQTTContext_t * pxMqttContext,
                                  eventCallback,
                                  pxNetworkBuffer );
 
+        /* MQTTv5: allocate buffer for publish acknowledgements */
+        uint8_t propertyBuffer[500];
         eMqttStatus = MQTT_InitStatefulQoS( pxMqttContext,
                                         pOutgoingPublishRecords,
                                         mqttexampleOUTGOING_PUBLISH_RECORD_LEN,
                                         pIncomingPublishRecords,
-                                        mqttexampleINCOMING_PUBLISH_RECORD_LEN );
+                                        mqttexampleINCOMING_PUBLISH_RECORD_LEN,
+                                        propertyBuffer,
+                                        sizeof(propertyBuffer) );
 
         if( eMqttStatus != MQTTSuccess )
         {
@@ -981,12 +1012,28 @@ BaseType_t EstablishMqttSession( MQTTContext_t * pxMqttContext,
              * PINGREQ Packet. */
             xConnectInfo.keepAliveSeconds = mqttexampleKEEP_ALIVE_TIMEOUT_SECONDS;
 
+            /* MQTTv5: Create property builder to handle MQTTv5 properties */
+            MQTTPropBuilder_t connectionProperties ;
+            uint8_t buf[500] ;
+            size_t bufLength = sizeof(buf);
+            MQTTPropertyBuilder_Init(&connectionProperties, buf, bufLength) ;
+
+            /* MQTTv5: If using property builder, must set packet size */
+            MQTTPropAdd_MaxPacketSize(&connectionProperties, 1024, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT } );
+            MQTTPropAdd_RequestProbInfo(&connectionProperties, 1, NULL);
+
+            /* MQTTv5: Set connection property (e.g session expiry) if needed */
+            // uint32_t sessionExpiryInterval = 100 ; // 100ms
+            // MQTTPropAdd_SessionExpiry(&connectionProperties, sessionExpiryInterval, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT } );
+
             /* Send MQTT CONNECT packet to broker. */
             eMqttStatus = MQTT_Connect( pxMqttContext,
                                         &xConnectInfo,
                                         NULL,
                                         mqttexampleCONNACK_RECV_TIMEOUT_MS,
-                                        &sessionPresent );
+                                        &sessionPresent,
+                                        &connectionProperties,
+                                        NULL );
 
             if( eMqttStatus != MQTTSuccess )
             {
@@ -1050,8 +1097,24 @@ BaseType_t DisconnectMqttSession( MQTTContext_t * pxMqttContext,
 
     if( mqttSessionEstablished == true )
     {
+        /* MQTTv5: Create property builder to handle MQTTv5 properties */
+        MQTTPropBuilder_t propertyBuilder = { 0 };
+        uint8_t propertyBuffer[100];
+        MQTTPropertyBuilder_Init(&propertyBuilder,
+                                propertyBuffer,
+                                sizeof(propertyBuffer));
+        /* MQTTv5: Add disconnect properties */
+        MQTTPropAdd_ReasonString(&propertyBuilder,
+                                "Normal shutdown",
+                                strlen("Normal shutdown"),
+                                &(uint8_t){ MQTT_PACKET_TYPE_DISCONNECT });
+        MQTTSuccessFailReasonCode_t reason = MQTT_REASON_DISCONNECT_NORMAL_DISCONNECTION;
+
+
         /* Send DISCONNECT. */
-        eMqttStatus = MQTT_Disconnect( pxMqttContext );
+        eMqttStatus = MQTT_Disconnect( pxMqttContext,
+                                       &propertyBuilder,
+                                       &reason );
 
         if( eMqttStatus != MQTTSuccess )
         {
@@ -1099,11 +1162,27 @@ BaseType_t UnsubscribeFromTopic( MQTTContext_t * pxMqttContext,
     /* Generate packet identifier for the UNSUBSCRIBE packet. */
     globalUnsubscribePacketIdentifier = MQTT_GetPacketId( pxMqttContext );
 
+    /* MQTTv5: Create property builder to handle MQTTv5 properties */
+    MQTTPropBuilder_t propertyBuilder ;
+    uint8_t buf[100] ;
+    size_t bufLength = sizeof(buf);
+    MQTTPropertyBuilder_Init(&propertyBuilder, buf, bufLength) ;
+
+    /* MQTTv5: Create sample user custom property */
+    MQTTUserProperty_t userProperty = {
+        .pKey = "key",
+        .keyLength = strlen("key"),
+        .pValue = "value",
+        .valueLength = strlen("value")
+    };
+    MQTTPropAdd_UserProp(&propertyBuilder, &userProperty, &(uint8_t){ MQTT_PACKET_TYPE_UNSUBSCRIBE } );
+
     /* Send UNSUBSCRIBE packet. */
     eMqttStatus = MQTT_Unsubscribe( pxMqttContext,
                                     pSubscriptionList,
                                     sizeof( pSubscriptionList ) / sizeof( MQTTSubscribeInfo_t ),
-                                    globalUnsubscribePacketIdentifier );
+                                    globalUnsubscribePacketIdentifier,
+                                    &propertyBuilder );
 
     if( eMqttStatus != MQTTSuccess )
     {
@@ -1170,10 +1249,21 @@ BaseType_t PublishToTopic( MQTTContext_t * pxMqttContext,
         /* Get a new packet id. */
         outgoingPublishPackets[ ucPublishIndex ].packetId = MQTT_GetPacketId( pxMqttContext );
 
+        /* MQTTv5: Create property builder to handle MQTTv5 properties */
+        MQTTPropBuilder_t propertyBuilder ;
+        uint8_t buf[100] ;
+        size_t bufLength = sizeof(buf);
+        MQTTPropertyBuilder_Init(&propertyBuilder, buf, bufLength) ;
+
+        /* MQTTv5: Add publish properties */
+        MQTTPropAdd_PayloadFormat(&propertyBuilder, 1, &(uint8_t){ MQTT_PACKET_TYPE_PUBLISH } );
+        MQTTPropAdd_TopicAlias(&propertyBuilder, 1, &(uint8_t){ MQTT_PACKET_TYPE_PUBLISH } );
+
         /* Send PUBLISH packet. */
         eMqttStatus = MQTT_Publish( pxMqttContext,
                                     &outgoingPublishPackets[ ucPublishIndex ].pubInfo,
-                                    outgoingPublishPackets[ ucPublishIndex ].packetId );
+                                    outgoingPublishPackets[ ucPublishIndex ].packetId,
+                                    &propertyBuilder );
 
         if( eMqttStatus != MQTTSuccess )
         {
