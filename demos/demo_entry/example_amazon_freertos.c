@@ -1,6 +1,13 @@
+#if defined(CONFIG_AMEBADPLUS) || defined(CONFIG_AMEBALITE) || defined(CONFIG_AMEBASMART)
 #include "ameba.h"
 #include "os_wrapper.h"
 #include "log.h"
+#elif defined(CONFIG_AMEBAD) || defined(CONFIG_AMEBAZ2)
+#include "platform_opts.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "diag.h"
+#endif
 
 extern void aws_main(void);
 
@@ -8,16 +15,23 @@ static void example_amazon_freertos_thread(void *param)
 {
     (void)param;
 
-    RTK_LOGI(NOTAG, "Starting aws_main()!\n");
+    printf("Starting aws_main()!\n");
     aws_main();
 
-	rtos_task_delete(NULL);
-	return;
+#if defined(CONFIG_AMEBADPLUS) || defined(CONFIG_AMEBALITE) || defined(CONFIG_AMEBASMART)
+    rtos_task_delete(NULL);
+#elif defined(CONFIG_AMEBAD) || defined(CONFIG_AMEBAZ2)
+    vTaskDelete(NULL);
+#endif
 }
 
 void example_amazon_freertos(void)
 {
-	if (rtos_task_create(NULL, ((const char *)"example_amazon_freertos"), example_amazon_freertos_thread, NULL, 2048 * 4, 1) != RTK_SUCCESS) {
-		RTK_LOGS(NOTAG, RTK_LOG_ERROR, "\n\r%s rtos_task_create(init_thread) failed", __FUNCTION__);
-	}
+#if defined(CONFIG_AMEBADPLUS) || defined(CONFIG_AMEBALITE) || defined(CONFIG_AMEBASMART)
+    if (rtos_task_create(NULL, ((const char *)"example_amazon_freertos"), example_amazon_freertos_thread, NULL, 2048 * 4, 1) != RTK_SUCCESS) {
+#elif defined(CONFIG_AMEBAD) || defined(CONFIG_AMEBAZ2)
+    if(xTaskCreate(example_amazon_freertos_thread, ((const char*)"example_amazon_freertos_thread"), 1024, NULL, tskIDLE_PRIORITY + 1, NULL) != pdPASS) {
+#endif
+        printf("\n\r%s failed to create task", __FUNCTION__);
+    }
 }

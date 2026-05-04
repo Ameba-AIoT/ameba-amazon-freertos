@@ -1,12 +1,13 @@
 # AWS Examples Guidance
 
-The AWS demo source code is centralized in [demos/demo_entry/aws_main.c](../demos/demo_entry/aws_main.c), with the primary entry point identified as aws_main. Realtek provides six comprehensive examples to demonstrate core AWS IoT capabilities:
+The AWS demo source code is centralized in [demos/demo_entry/aws_main.c](../demos/demo_entry/aws_main.c), with the primary entry point identified as aws_main. Realtek provides seven comprehensive examples to demonstrate core AWS IoT capabilities:
 
 - [MQTT Mutual Authentication](#mqtt-mutual-authentication)
 - [HTTP Mutual Authentication](#http-mutual-authentication)
 - [Device Shadow](#device-shadow)
 - [Device Defender](#device-defender)
 - [OTA over MQTT](#ota-over-mqtt)
+- [OTA over HTTP](#ota-over-http)
 - [OTA over MQTT streams](#ota-over-mqtt-streams)
 
 ## MQTT Mutual Authentication
@@ -108,6 +109,41 @@ The following is the expected flow of the example:
     1. Unsubscribe from `jobs/#` MQTT topic
     2. Disconnect from MQTT broker
     3. Delete the semaphore created for buffer operations
+9. Device will reset and start with newer version
+
+For more details, please refer to:
+- [AWS IoT Over the air (OTA) library](https://docs.aws.amazon.com/freertos/latest/userguide/ota-update-library.html)
+- [Creating an OTA update (AWS IoT console)](https://docs.aws.amazon.com/freertos/latest/userguide/ota-console-workflow.html)
+- [AWS IoT Jobs](https://docs.aws.amazon.com/iot/latest/developerguide/iot-jobs.html)
+
+## OTA over HTTP
+
+These example demonstrate updating device firmware remotely using the **OTA Core** Library, where the OTA job is controlled over MQTT while the firmware blocks are downloaded over HTTP from a pre-signed Amazon S3 URL.
+Before building the example, please refer to [OTA README.md](../tools/ota/README.md) for OTA guide.
+- Source code: [`demos/ota/ota_demo_core_http/ota_demo_core_http.c`](../demos/ota/ota_demo_core_http/ota_demo_core_http.c).
+- Entry point: [`RunOtaCoreHttpDemo`](../demos/ota/ota_demo_core_http/ota_demo_core_http.c#L2389).
+
+> [!NOTE]
+> For AmebaD, please enable PSRAM by setting all `psram_dev_*` config to `TRUE` at `component/soc/realtek/amebad/fwlib/usrcfg/rtl8721dhp_intfcfg.c`, and enable `configUSE_PSRAM_FOR_HEAP_REGION` at `project/realtek_amebaD_va0_example/inc/inc_hp/FreeRTOSConfig.h`.
+
+The following is the expected flow of the example:
+1. Initialize semaphore for buffer operations
+2. Connect to MQTT broker
+3. Register `jobs/#` MQTT topic to OTA Agent which will be initialized later
+4. Create MQTT Agent Task
+5. Start OTA demo
+    1. Initialize OTA agent with MQTT control interface and HTTP data interface
+    2. Initialize OTA agent task
+    3. Send start event to OTA agent
+    4. Start a loop and wait for OTA job
+6. Start OTA job from AWS IoT Console
+    - Please refer to [this guide](https://docs.aws.amazon.com/freertos/latest/userguide/ota-console-workflow.html) for the details
+7. OTA job will be triggered and the firmware blocks will be downloaded over HTTP from the pre-signed Amazon S3 URL
+8. Once OTA is successfully finished, clean up process will be initiated
+    1. Unsubscribe from `jobs/#` MQTT topic
+    2. Disconnect from MQTT broker
+    3. Disconnect the HTTP connection
+    4. Delete the semaphore created for buffer operations
 9. Device will reset and start with newer version
 
 For more details, please refer to:

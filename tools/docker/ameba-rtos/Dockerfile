@@ -11,7 +11,7 @@ ARG TOOLCHAIN_ASDK_FILE_PATH='/opt/rtk-toolchain/prebuilts-linux-1.0.3.tar.gz'
 
 # Redefine following build arguments to respective repo and tag/branch
 ARG AMEBA_AWS_REPO=https://github.com/mikaelajiwidodo/ameba-amazon-freertos.git
-ARG TAG_NAME=FreeRTOS-LTS-202406.xx_restructuring
+ARG TAG_NAME=FreeRTOS-LTS-202406.xx_D_Z2_restructuring
 
 # Define fixed build arguments
 ARG AMBRTOS_REPO=https://github.com/Ameba-AIoT/ameba-rtos.git

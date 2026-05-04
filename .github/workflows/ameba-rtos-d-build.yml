@@ -1,0 +1,44 @@
+name: Build Ameba D + AWS Docker Image
+
+on:
+  pull_request:
+    branches:
+      - FreeRTOS-LTS-*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Free Disk Space (Ubuntu)
+      uses: jlumbroso/free-disk-space@main
+      with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: false
+          docker-images: true
+          swap-storage: true
+
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Build Docker common base image
+      run: |
+        docker buildx build --file tools/docker/Dockerfile --tag ameba-rtos-aws:common --load .
+
+    - name: Build AmebaD Docker image
+      run: |
+        docker buildx build --file tools/docker/amebad/Dockerfile --tag ameba-rtos-aws:ameba-rtos-d --load .
+
+    - name: Check Docker images
+      run: docker images
+
+    - name: Run Docker container for amebad and execute scripts
+      run: |
+        chmod +x ./tools/docker/amebad/run_docker_build_scripts.sh
+        ./tools/docker/amebad/run_docker_build_scripts.sh
+
+    - name: Clean up Docker
+      run: docker system prune -af

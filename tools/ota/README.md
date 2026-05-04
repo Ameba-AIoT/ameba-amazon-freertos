@@ -152,6 +152,69 @@ Once you've set the addresses correctly for `IMG_APP_OTA1` and `IMG_APP_OTA2`, e
 
 </details>
 
+<details>
+  <summary>For RTL872xD OTA Image</summary>
+
+Ensure that the OTA address is set correctly according to the device's flash size in the following files:
+
+    component/soc/realtek/amebad/fwlib/include/rtl8721d_ota.h
+    component/soc/realtek/amebad/fwlib/usrcfg/rtl8721d_bootcfg.c
+
+The file can be found in the base SDK.
+
+### Example
+
+In `rtl8721d_ota.h`
+```c
+#define LS_IMG2_OTA1_ADDR	0x08006000				/* KM0 OTA1 start address*/
+#define LS_IMG2_OTA2_ADDR	0x08106000				/* KM0 OTA2 start address*/
+```
+
+In `rtl8721d_bootcfg.c`
+```c
+u32 OTA_Region[2] = {
+	0x08006000,		/* OTA1 region start address */
+	0x08106000,		/* OTA2 region start address */
+};
+```
+
+Once you've set the addresses correctly for `LS_IMG2_OTA1_ADDR`, `LS_IMG2_OTA2_ADDR`, and `OTA_Region`, ensure that you rebuild both the firmware correctly.
+
+</details>
+
+<details>
+  <summary>For RTL8720C OTA Image</summary>
+
+Ensure that the OTA address is set correctly according to the device's flash size in the following files:
+
+    project/realtek_amebaz2_v0_example/GCC-RELEASE/partition.json
+
+The file can be found in the base SDK.
+
+### Example
+
+In `partition.json`
+```json
+        "fw1":{
+            "start_addr" : "0xC000",
+            "length" : "0xF8000",
+            "type": "FW1",
+            "dbg_skip": false,
+            "hash_key":"000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E5F"
+        },
+        "fw2":{
+            "start_addr" : "0x104000",
+            "length" : "0xF8000",
+            "type": "FW2",
+            "dbg_skip": false,
+            "hash_key":"000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E5F"
+        }
+```
+
+Once you've set the addresses correctly for `fw1` and `fw2`, ensure that you rebuild both the firmware correctly.
+
+</details>
+
 ## How is the OTA firmware signature generated
 
 > [!CAUTION]
@@ -162,12 +225,27 @@ Once you've set the addresses correctly for `IMG_APP_OTA1` and `IMG_APP_OTA2`, e
 > !!!!!!! The key pair in SDK are just for example, please generated new key by openssl !!!!!!
 
 1.	Build the project and ensure that ota_all.bin is generated
-2.	Run ameba-amazon-freertos/tools/ota/scripts/python_custom_ecdsa_ameba_gcc.py to output IDT-OTA-Signature. The script requires the following pre-requisites to work
+2.	Run the OTA image generator python script that matches your build to produce the signed firmware image and output IDT-OTA-Signature. The scripts live in ameba-amazon-freertos/tools/ota/scripts/ and must be run from that directory.
+
+    - Ameba RTOS v1.2 (CMake build):
+        ```
+        python3 python_custom_ecdsa_amebartos_gcc.py -o <path-to-ota_all.bin> -a <path-to-app-image>
+        ```
+    - AmebaD:
+        ```
+        python3 python_custom_ecdsa_amebad_gcc.py -a <path-to-app-image>
+        ```
+    - AmebaZ2:
+        ```
+        python3 python_custom_ecdsa_amebaz2_gcc.py -a <path-to-firmware-image>
+        ```
+
+    The scripts require the following pre-requisites to work:
     1.	Python must be installed in the system with version 3.7.x or later
     2.	Pyopenssl library must be installed using 'pip install pyopenssl'
     3.	The ECDSA signing key and the Certificate pair must be present in the same folder as the python script and must be named 'ecdsa-sha256-signer.key.pem' and 'ecdsa-sha256-signer.crt.pem' respectively.
         - There might be some error if there are packages lack in your environment (like openssl...). Please install the package and run the script again.
-3.	After getting the IDT-OTA-Signature, you can upload ameba-amazon-freertos/build_RTLXXX/ota_all.bin to the S3 bucket.
+3.	After getting the IDT-OTA-Signature, you can upload the generated OTA image (e.g. ameba-amazon-freertos/build_RTLXXX/ota_all.bin) to the S3 bucket.
 
 ## How to trigger a custom signed OTA job in amazon AWS IOT core.
 
