@@ -75,11 +75,17 @@ extern int RunOtaCoreMqttDemo( bool xAwsIotMqttMode,
                                void * pNetworkCredentialInfo,
                                const IotNetworkInterface_t * pxNetworkInterface );
 
-extern int RunOtaCoreMqttStreamsDemo( bool xAwsIotMqttMode,
+extern int RunOtaCoreHttpDemo( bool xAwsIotMqttMode,
                                const char * pIdentifier,
                                void * pNetworkServerInfo,
                                void * pNetworkCredentialInfo,
                                const IotNetworkInterface_t * pxNetworkInterface );
+
+extern int RunOtaCoreMqttStreamsDemo( bool xAwsIotMqttMode,
+                                      const char * pIdentifier,
+                                      void * pNetworkServerInfo,
+                                      void * pNetworkCredentialInfo,
+                                      const IotNetworkInterface_t * pxNetworkInterface );
 /*-----------------------------------------------------------*/
 /**
  * @brief Application runtime entry point.
@@ -108,7 +114,7 @@ int aws_main( void )
     }
 
     //mqtt mutual auto demo
-    //RunCoreMqttMutualAuthDemo(0, NULL, NULL, NULL, NULL);
+    RunCoreMqttMutualAuthDemo(0, NULL, NULL, NULL, NULL);
 
     //http mutual auto demo
     //RunCoreHttpMutualAuthDemo(0, NULL, NULL, NULL, NULL);
@@ -122,8 +128,11 @@ int aws_main( void )
     // ota over mqtt demo
     //RunOtaCoreMqttDemo(0, NULL, NULL, NULL, NULL);
 
-    //ota over mqtt streams demo (NEW!)
-    RunOtaCoreMqttStreamsDemo(0, NULL, NULL, NULL, NULL);
+    // ota over http demo
+    //RunOtaCoreHttpDemo(0, NULL, NULL, NULL, NULL);
+
+    // ota over mqtt streams demo
+    //RunOtaCoreMqttStreamsDemo(0, NULL, NULL, NULL, NULL);
 
     return 0;
 }
