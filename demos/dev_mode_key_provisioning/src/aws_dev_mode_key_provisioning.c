@@ -58,6 +58,7 @@
 #include "core_pki_utils.h"
 
 /* mbedTLS includes. */
+#include "mbedtls/library/common.h"
 #include "mbedtls/pk.h"
 #include "mbedtls/oid.h"
 
