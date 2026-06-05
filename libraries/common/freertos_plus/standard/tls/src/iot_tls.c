@@ -36,9 +36,9 @@
 #include "core_pki_utils.h"
 
 /* mbedTLS includes. */
-#include "mbedtls/library/common.h"
 #include "mbedtls/platform.h"
 #if MBEDTLS_VERSION_MAJOR >= 3 && MBEDTLS_VERSION_MINOR >= 6
+#include "mbedtls/library/common.h"
 #if defined(CONFIG_AMEBAZ2) || defined(CONFIG_AMEBAD)
 #include "osdep_service.h"
 #elif defined(CONFIG_AMEBADPLUS) || defined(CONFIG_AMEBALITE) || defined(CONFIG_AMEBASMART) || defined(CONFIG_AMEBAGREEN2)
