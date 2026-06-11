@@ -49,7 +49,7 @@ static bool aws_ota_target_hdr_get = false;
 static uint32_t ota_target_index = OTA_INDEX_2;
 static uint32_t HdrIdx = 0;
 static ota_hdr_manager_t aws_ota_target_hdr;
-Manifest_TypeDef aws_manifest_new;
+ota_manifest_t aws_manifest_new;
 static bool aws_manifest_get = false;
 
 
@@ -215,7 +215,7 @@ bool prvPAL_Streams_CreateFileForRx_ameba(AfrOtaJobDocumentFields_t *C)
         aws_ota_imgsz = 0;
         aws_ota_target_hdr_get = false;
         memset((void *)&aws_ota_target_hdr, 0, sizeof(ota_hdr_manager_t));
-        memset((void *)&aws_manifest_new, 0, sizeof(Manifest_TypeDef));
+        memset((void *)&aws_manifest_new, 0, sizeof(ota_manifest_t));
 
         for( i = 0; i < block_cnt; i++)
         {
@@ -294,22 +294,22 @@ static OtaPalStatus_New_t prvPAL_Streams_SignatureVerificationUpdate_ameba(AfrOt
     }
 
     /*handle manifest */
-    memcpy(&aws_ota_target_hdr.Manifest[HdrIdx], &aws_manifest_new, sizeof(Manifest_TypeDef));
-    CRYPTO_SignatureVerificationUpdate(pvContext, &aws_ota_target_hdr.Manifest[HdrIdx], sizeof(Manifest_TypeDef));
+    memcpy(&aws_ota_target_hdr.Manifest[HdrIdx], &aws_manifest_new, sizeof(ota_manifest_t));
+    CRYPTO_SignatureVerificationUpdate(pvContext, &aws_ota_target_hdr.Manifest[HdrIdx], sizeof(ota_manifest_t));
 
     printf("[%d]manifest\n",HdrIdx);
-    for (int i = 0; i < sizeof(Manifest_TypeDef); i++) {
+    for (int i = 0; i < sizeof(ota_manifest_t); i++) {
         printf("0x%x ",*((u8 *)&aws_ota_target_hdr.Manifest[HdrIdx] + i));
     }
     printf("\n");
 
-    len = len - sizeof(Manifest_TypeDef);
+    len = len - sizeof(ota_manifest_t);
     /* read flash data back to check signature of the image */
     for (i = 0; i < len; i += BUF_SIZE) {
         rlen = (len - i) > BUF_SIZE ? BUF_SIZE : (len - i);
-        flash_stream_read(&flash, addr - SPI_FLASH_BASE + i + sizeof(Manifest_TypeDef), rlen, pTempbuf);
+        flash_stream_read(&flash, addr - SPI_FLASH_BASE + i + sizeof(ota_manifest_t), rlen, pTempbuf);
     #if OTA_MEMDUMP
-        vMemDump(addr - SPI_FLASH_BASE + i + sizeof(Manifest_TypeDef), pTempbuf, rlen, "PAYLOAD1");
+        vMemDump(addr - SPI_FLASH_BASE + i + sizeof(ota_manifest_t), pTempbuf, rlen, "PAYLOAD1");
     #endif
         CRYPTO_SignatureVerificationUpdate(pvContext, pTempbuf, rlen);
     }
@@ -487,12 +487,12 @@ int32_t prvPAL_Streams_WriteBlock_ameba(AfrOtaJobDocumentFields_t *C, uint32_t u
         {
              OTA_PRINT("[OTA] manifest data arrived \n");
              //Save manifest
-             memcpy(&aws_manifest_new, pData, sizeof(Manifest_TypeDef));
+             memcpy(&aws_manifest_new, pData, sizeof(ota_manifest_t));
              //Erase manifest for protect shutdown while ota downloading
-             memset(pData, 0xff, sizeof(Manifest_TypeDef));
+             memset(pData, 0xff, sizeof(ota_manifest_t));
 
              printf("[%d]manifest\n",HdrIdx);
-             for (int i = 0; i < sizeof(Manifest_TypeDef); i++) {
+             for (int i = 0; i < sizeof(ota_manifest_t); i++) {
                  printf("0x%x ",*((u8 *)&aws_manifest_new + i));
              }
              printf("\n");
@@ -540,8 +540,8 @@ OtaPalStatus_New_t prvPAL_Streams_ActivateNewImage_ameba(void)
     OTA_PRINT("[OTA] FirmwareSize = %d, OtaTargetHdr.FileImgHdr.ImgLen = %d\n", aws_ota_imgsz, aws_ota_target_hdr.FileImgHdr[HdrIdx].ImgLen);
 
     /*------------- verify checksum and update signature-----------------*/
-    if(verify_ota_checksum(&aws_ota_target_hdr, ota_target_index, 0/*header index*/)){
-        if(!ota_update_manifest(&aws_ota_target_hdr, ota_target_index, 0/*header index*/)) {
+    if(ota_storage_verify_checksum(&aws_ota_target_hdr, ota_target_index, 0/*header index*/) == OTA_OK ){
+        if(ota_storage_update_manifest(&aws_ota_target_hdr, ota_target_index, 0/*header index*/) != OTA_OK ) {
             OTA_PRINT("[OTA] [%s], change signature failed\r\n", __FUNCTION__);
             return OtaPalActivateFailed_New;
         } else {

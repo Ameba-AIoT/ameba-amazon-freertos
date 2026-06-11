@@ -132,6 +132,11 @@ int aws_main( void )
     RunOtaCoreMqttDemo(0, NULL, NULL, NULL, NULL);
 #endif
 
+    //ota over http demo
+#if defined(CONFIG_EXAMPLE_AMAZON_FREERTOS_OTA_OVER_HTTP) && CONFIG_EXAMPLE_AMAZON_FREERTOS_OTA_OVER_HTTP
+    RunOtaCoreHttpDemo(0, NULL, NULL, NULL, NULL);
+#endif
+
     //ota over mqtt streams demo (NEW!)
 #if defined(CONFIG_EXAMPLE_AMAZON_FREERTOS_OTA_OVER_MQTT_STREAMS) && CONFIG_EXAMPLE_AMAZON_FREERTOS_OTA_OVER_MQTT_STREAMS
     RunOtaCoreMqttStreamsDemo(0, NULL, NULL, NULL, NULL);
