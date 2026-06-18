@@ -6,8 +6,8 @@ import argparse
 def get_parser():
     parser = argparse.ArgumentParser("Python Custom EDCSA Ameba GCC Script")
 
-    parser.add_argument("-b", "--build-folder", type=str, help="Path to build folder, e.g ../../../build_RTL8721Dx")
-    parser.add_argument("-a", "--app-image",    type=str, help="Path to image app, e.g. ../../../build_RTL8721Dx/km0_km4_app.bin")
+    parser.add_argument("-o", "--ota-image", type=str, help="Path to ota image, e.g. ../../../build_RTL8721Dx/ota_all.bin")
+    parser.add_argument("-a", "--app-image", type=str, help="Path to app image, e.g. ../../../build_RTL8721Dx/km0_km4_app.bin")
 
     return parser
 
@@ -15,8 +15,8 @@ def main():
     parser = get_parser()
     args = parser.parse_args()
 
-    if args.build_folder is None:
-        print("Missing -b/--build-folder argument")
+    if args.ota_image is None:
+        print("Missing -o/--ota-image argument")
         parser.print_help()
         return
 
@@ -25,10 +25,10 @@ def main():
         parser.print_help()
         return
 
-    if os.path.exists(args.build_folder):
+    if os.path.exists(args.ota_image):
         pass
     else:
-        print(f"{args.build_folder} does not exist")
+        print(f"{args.ota_image} does not exist")
         return
 
     if os.path.exists(args.app_image):
@@ -62,10 +62,10 @@ def main():
     version_byte = version.to_bytes(4,'little')
 
     # fix ota_all header
-    with open(f"{args.build_folder}/ota_all.bin", 'r+b') as f:
+    with open(f"{args.ota_image}", 'r+b') as f:
         f.seek(0)
         f.write(version_byte)
-        print("Successfully modified ota_all.bin version")
+        print(f"Successfully modified {args.ota_image} version")
 
     #caculate signature and output to IDT-OTA-Signature
     subprocess.call(['sh', 'signer_gcc_ameba.sh', args.app_image])

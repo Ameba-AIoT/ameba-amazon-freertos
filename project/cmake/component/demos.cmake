@@ -21,6 +21,7 @@ ameba_list_append(private_sources
     ${AWS_DEMOS_DEVICE_DEFENDER_DIR}/report_builder.c
     ${AWS_DEMOS_JOBS_DIR}/jobs_demo.c
     ${AWS_DEMOS_OTA_DIR}/ota_demo_core_mqtt/ota_demo_core_mqtt.c
+    ${AWS_DEMOS_OTA_DIR}/ota_demo_core_http/ota_demo_core_http.c
     ${AWS_DEMOS_OTA_DIR}/ota_demo_mqtt_streams/ota_demo_mqtt_streams.c
     ${AWS_DEMO_ENTRY_DIR}/app_example.c
     ${AWS_DEMO_ENTRY_DIR}/aws_main.c

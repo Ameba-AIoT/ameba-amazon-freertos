@@ -73,6 +73,10 @@ elseif(AWS_EXAMPLE STREQUAL "ota_over_mqtt")
 ameba_list_append(aws_defintions
     CONFIG_EXAMPLE_AMAZON_FREERTOS_OTA_OVER_MQTT=1
 )
+elseif(AWS_EXAMPLE STREQUAL "ota_over_http")
+ameba_list_append(aws_defintions
+    CONFIG_EXAMPLE_AMAZON_FREERTOS_OTA_OVER_HTTP=1
+)
 elseif(AWS_EXAMPLE STREQUAL "ota_over_mqtt_streams")
 ameba_list_append(aws_defintions
     CONFIG_EXAMPLE_AMAZON_FREERTOS_OTA_OVER_MQTT_STREAMS=1

@@ -55,6 +55,7 @@ set(AWS_ALL_EXAMPLES
     "device_shadow"
     "device_defender"
     "ota_over_mqtt"
+    "ota_over_http"
     "ota_over_mqtt_streams"
 )
 
