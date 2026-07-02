@@ -1415,7 +1415,11 @@ static MQTTStatus_t prvMqttAgentInit( void )
                               prvGetTimeMs,
                               prvIncomingPublishCallback,
                               /* Context to pass into the callback. Passing the pointer to subscription array. */
-                              pxGlobalSubscriptionList );
+                              NULL,
+                              /* MQTTv5: Properties buffer for MQTT Agent */
+                              NULL,
+                              /* MQTTv5: Size of properties buffer. Leave as 0 if above is NULL */
+                              0 );
 
     return xReturn;
 }
@@ -1512,8 +1516,28 @@ static MQTTStatus_t prvMQTTConnect( void )
      * PINGREQ Packet. */
     xConnectInfo.keepAliveSeconds = MQTT_KEEP_ALIVE_INTERVAL_SECONDS;
 
+    /* MQTTv5: Create property builder to handle MQTTv5 properties */
+    MQTTPropBuilder_t connectionProperties ;
+    uint8_t buf[500] ;
+    size_t bufLength = sizeof(buf);
+    MQTTPropertyBuilder_Init(&connectionProperties, buf, bufLength) ;
+
+    /* MQTTv5: If using property builder, must set packet size */
+    MQTTPropAdd_MaxPacketSize(&connectionProperties, 1024, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT } );
+    MQTTPropAdd_RequestProbInfo(&connectionProperties, 1, NULL);
+
+    /* MQTTv5: Set connection property (e.g session expiry) if needed */
+    // uint32_t sessionExpiryInterval = 100 ; // 100ms
+    // MQTTPropAdd_SessionExpiry(&connectionProperties, sessionExpiryInterval, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT } );
+
     /* Send MQTT CONNECT packet to broker. */
-    xMqttStatus = MQTT_Connect( &xGlobalMqttAgentContext.mqttContext, &xConnectInfo, NULL, CONNACK_RECV_TIMEOUT_MS, &xSessionPresent );
+    xMqttStatus = MQTT_Connect( &xGlobalMqttAgentContext.mqttContext,
+                                &xConnectInfo,
+                                NULL,
+                                CONNACK_RECV_TIMEOUT_MS,
+                                &xSessionPresent,
+                                &connectionProperties,
+                                NULL );
 
     return xMqttStatus;
 }
@@ -1590,7 +1614,9 @@ static void prvDisconnectFromMQTTBroker( void )
     xCommandContext.xReturnStatus = MQTTSendFailed;
 
     /* Disconnect MQTT session. */
-    xCommandStatus = MQTTAgent_Disconnect( &xGlobalMqttAgentContext, &xCommandParams );
+    /* MQTTv5: Set any disconnect args here (properties, reason code etc.) */
+    MQTTAgentDisconnectArgs_t xDisconnectArgs = { 0 };
+    xCommandStatus = MQTTAgent_Disconnect( &xGlobalMqttAgentContext, &xDisconnectArgs, &xCommandParams );
     configASSERT( xCommandStatus == MQTTSuccess );
 
     xTaskNotifyWait( 0,
@@ -2019,7 +2045,10 @@ static OtaMqttStatus_t prvMqttPublish( const char * const pcTopic,
     xCommandContext.pArgs = NULL;
     xCommandContext.xReturnStatus = MQTTSendFailed;
 
-    xCommandStatus = MQTTAgent_Publish( &xGlobalMqttAgentContext, &publishInfo, &xCommandParams );
+    /* MQTTv5: Add publish args if any */
+    MQTTAgentPublishArgs_t publishArgs = { .pPublishInfo = &publishInfo };
+
+    xCommandStatus = MQTTAgent_Publish( &xGlobalMqttAgentContext, &publishArgs, &xCommandParams );
     configASSERT( xCommandStatus == MQTTSuccess );
 
     xTaskNotifyWait( 0,

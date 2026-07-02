@@ -174,9 +174,12 @@ static uint32_t reportId = 0;
  * @param[in] pPacketInfo Information on the type of incoming MQTT packet.
  * @param[in] pDeserializedInfo Deserialized information from incoming packet.
  */
-static void publishCallback( MQTTContext_t * pMqttContext,
+ static bool publishCallback( MQTTContext_t * pMqttContext,
                              MQTTPacketInfo_t * pPacketInfo,
-                             MQTTDeserializedInfo_t * pDeserializedInfo );
+                             MQTTDeserializedInfo_t * pDeserializedInfo,
+                             MQTTSuccessFailReasonCode_t *pReasonCode,
+                             MQTTPropBuilder_t * pSendPropsBuffer,
+                             MQTTPropBuilder_t * pGetPropsBuffer );
 
 /**
  * @brief Collect all the metrics to be sent in the device defender report.
@@ -300,19 +303,21 @@ static bool validateDefenderResponse( const char * defenderResponse,
     return status;
 }
 /*-----------------------------------------------------------*/
-
-static void publishCallback( MQTTContext_t * pMqttContext,
+static bool publishCallback( MQTTContext_t * pMqttContext,
                              MQTTPacketInfo_t * pPacketInfo,
-                             MQTTDeserializedInfo_t * pDeserializedInfo )
+                             MQTTDeserializedInfo_t * pDeserializedInfo,
+                             MQTTSuccessFailReasonCode_t *pReasonCode,
+                             MQTTPropBuilder_t * pSendPropsBuffer,
+                             MQTTPropBuilder_t * pGetPropsBuffer )
 {
     DefenderStatus_t status;
     DefenderTopic_t api;
     bool validationResult;
+    bool valid = true;
     MQTTPublishInfo_t * pPublishInfo = pDeserializedInfo->pPublishInfo;
 
     /* Silence compiler warnings about unused variables. */
     ( void ) pMqttContext;
-
     /* Handle incoming publish. The lower 4 bits of the publish packet
      * type is used for the dup, QoS, and retain flags. Hence masking
      * out the lower bits to check if the packet is publish. */
@@ -357,6 +362,7 @@ static void publishCallback( MQTTContext_t * pMqttContext,
             else
             {
                 LogError( ( "Unexpected defender API : %d.", api ) );
+                valid = false;
             }
         }
         else
@@ -366,12 +372,15 @@ static void publishCallback( MQTTContext_t * pMqttContext,
                         ( const char * ) pPublishInfo->pTopicName,
                         ( int ) pPublishInfo->payloadLength,
                         ( const char * ) ( pPublishInfo->pPayload ) ) );
+            valid = false;
         }
     }
     else
     {
         vHandleOtherIncomingPacket( pPacketInfo, pDeserializedInfo->packetIdentifier );
     }
+
+    return valid;
 }
 /*-----------------------------------------------------------*/
 

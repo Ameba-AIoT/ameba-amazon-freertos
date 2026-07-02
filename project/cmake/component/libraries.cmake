@@ -56,9 +56,12 @@ ameba_list_append(private_sources
     ${AWS_CORE_MQTT_DIR}/source/core_mqtt.c
     ${AWS_CORE_MQTT_DIR}/source/core_mqtt_serializer.c
     ${AWS_CORE_MQTT_DIR}/source/core_mqtt_state.c
+    ${AWS_CORE_MQTT_DIR}/source/core_mqtt_serializer_private.c
+    ${AWS_CORE_MQTT_DIR}/source/core_mqtt_prop_serializer.c
+    ${AWS_CORE_MQTT_DIR}/source/core_mqtt_prop_deserializer.c
 )
 
-# coreMQTT Agent
+## coreMQTT Agent
 ameba_list_append(private_sources
     ${AWS_CORE_MQTT_AGENT_DIR}/source/core_mqtt_agent.c
     ${AWS_CORE_MQTT_AGENT_DIR}/source/core_mqtt_agent_command_functions.c

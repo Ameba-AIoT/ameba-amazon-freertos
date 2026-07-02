@@ -241,12 +241,12 @@
 /**
  * @brief Stack size required for OTA agent task.
  */
-#define otaexampleAGENT_TASK_STACK_SIZE             ( otaconfigSTACK_SIZE )
+#define otaexampleAGENT_TASK_STACK_SIZE             ( 4000U )
 
 /**
  * @brief Priority required for OTA agent task.
  */
-#define otaexampleAGENT_TASK_PRIORITY               ( otaconfigAGENT_PRIORITY )
+#define otaexampleAGENT_TASK_PRIORITY               ( tskIDLE_PRIORITY + 2 )
 
 /**
  * @brief The number of ticks to wait for the OTA Agent to complete the shutdown.
@@ -312,12 +312,12 @@
  * MQTT agent task takes care of TLS connection and reconnection, keeping task
  * stack size to high enough required for TLS connection.
  */
-#define MQTT_AGENT_TASK_STACK_SIZE                  ( otaconfigSTACK_SIZE )
+#define MQTT_AGENT_TASK_STACK_SIZE                  ( 6000U )
 
 /**
  * @brief Priority required for OTA statistics task.
  */
-#define MQTT_AGENT_TASK_PRIORITY                    ( otaconfigAGENT_PRIORITY )
+#define MQTT_AGENT_TASK_PRIORITY                    ( tskIDLE_PRIORITY + 1 )
 
 /**
  * @brief The maximum amount of time in milliseconds to wait for the commands
@@ -1272,6 +1272,9 @@ static MQTTStatus_t prvMqttAgentInit( void )
     xTransport.recv = SecureSocketsTransport_Recv;
     xTransport.writev = NULL;
 
+    /* MQTTv5: allocate buffer for publish acknowledgements */
+    uint8_t propertyBuffer[500];
+
     /* Initialize MQTT Agent. */
     xReturn = MQTTAgent_Init( &xGlobalMqttAgentContext,
                               &xMessageInterface,
@@ -1280,8 +1283,11 @@ static MQTTStatus_t prvMqttAgentInit( void )
                               prvGetTimeMs,
                               prvIncomingPublishCallback,
                               /* Context to pass into the callback. Passing the pointer to subscription array. */
-                              pxGlobalSubscriptionList );
-
+                              pxGlobalSubscriptionList,
+                              /* MQTTv5: Properties buffer for MQTT Agent */
+                              propertyBuffer,
+                              /* MQTTv5: Size of properties buffer. */
+                              sizeof(propertyBuffer) );
     return xReturn;
 }
 /*-----------------------------------------------------------*/
@@ -1372,8 +1378,24 @@ static MQTTStatus_t prvMQTTConnect( void )
      * PINGREQ Packet. */
     xConnectInfo.keepAliveSeconds = MQTT_KEEP_ALIVE_INTERVAL_SECONDS;
 
+    /* MQTTv5: Create property builder to handle MQTTv5 properties */
+    MQTTPropBuilder_t connectionProperties ;
+    uint8_t buf[500] ;
+    size_t bufLength = sizeof(buf);
+    MQTTPropertyBuilder_Init(&connectionProperties, buf, bufLength) ;
+
+    /* MQTTv5: If using property builder, must set packet size */
+    MQTTPropAdd_MaxPacketSize(&connectionProperties, 1024, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT } );
+    MQTTPropAdd_RequestProbInfo(&connectionProperties, 1, NULL);
+
     /* Send MQTT CONNECT packet to broker. */
-    xMqttStatus = MQTT_Connect( &xGlobalMqttAgentContext.mqttContext, &xConnectInfo, NULL, CONNACK_RECV_TIMEOUT_MS, &xSessionPresent );
+    xMqttStatus = MQTT_Connect( &xGlobalMqttAgentContext.mqttContext, 
+                                &xConnectInfo, 
+                                NULL, 
+                                CONNACK_RECV_TIMEOUT_MS, 
+                                &xSessionPresent,
+                                &connectionProperties,
+                                NULL );
 
     return xMqttStatus;
 }
@@ -1447,7 +1469,9 @@ static void prvDisconnectFromMQTTBroker( void )
     xCommandContext.xReturnStatus = MQTTSendFailed;
 
     /* Disconnect MQTT session. */
-    xCommandStatus = MQTTAgent_Disconnect( &xGlobalMqttAgentContext, &xCommandParams );
+    /* MQTTv5: Set any disconnect args here (properties, reason code etc.) */
+    MQTTAgentDisconnectArgs_t xDisconnectArgs = { 0 };
+    xCommandStatus = MQTTAgent_Disconnect( &xGlobalMqttAgentContext, &xDisconnectArgs, &xCommandParams );
     configASSERT( xCommandStatus == MQTTSuccess );
 
     xTaskNotifyWait( 0,
@@ -1540,7 +1564,13 @@ static OtaMqttStatus_t prvMqttPublish( const char * const pcTopic,
     xCommandContext.pArgs = NULL;
     xCommandContext.xReturnStatus = MQTTSendFailed;
 
-    xCommandStatus = MQTTAgent_Publish( &xGlobalMqttAgentContext, &xPublishInfo, &xCommandParams );
+    /* MQTTv5: Add publish args if any */
+    MQTTAgentPublishArgs_t publishArgs = { 
+        .pPublishInfo = &xPublishInfo, 
+        .pProperties = NULL
+    };
+
+    xCommandStatus = MQTTAgent_Publish( &xGlobalMqttAgentContext, &publishArgs, &xCommandParams );
     configASSERT( xCommandStatus == MQTTSuccess );
 
     xTaskNotifyWait( 0,

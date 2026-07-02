@@ -712,9 +712,17 @@ static bool sendSuccessMessage( void )
          * Creating the message which contains the status of OTA job.
          * It will be published on the topic created in the previous step.
          */
-        size_t messageBufferLength = Jobs_UpdateMsg( Succeeded,
-                                                     "2",
-                                                     1U,
+        const char expectedVersion[] = "2";
+        const char statusDetails[] = "{\"key\":\"value\"}";
+        JobsUpdateRequest_t request = {
+            .status = Succeeded,
+            .expectedVersion = expectedVersion,
+            .expectedVersionLength = ( sizeof( expectedVersion ) - 1U ),
+            .statusDetails = statusDetails,
+            .statusDetailsLength = ( sizeof( statusDetails ) - 1U )
+        };
+
+        size_t messageBufferLength = Jobs_UpdateMsg( request,
                                                      messageBuffer,
                                                      UPDATE_JOB_MSG_LENGTH );
 
@@ -766,6 +774,8 @@ static bool jobDocumentParser( char * message,
             fileIndex = otaParser_parseJobDocFile( jobDoc,
                                                    jobDocLength,
                                                    fileIndex,
+                                                   "MQTT",
+                                                   strlen("MQTT"),
                                                    jobFields );
         } while( fileIndex > 0 );
     }

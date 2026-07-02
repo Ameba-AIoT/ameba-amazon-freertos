@@ -529,6 +529,13 @@ int RunCoreMqttMutualAuthDemo( bool awsIotMqttMode,
     * user of this demo must check the logs for any failure codes. */
     BaseType_t xDemoStatus = pdFAIL;
 
+    /* MQTTv5: Create property builder to handle MQTTv5 properties */
+    MQTTPropBuilder_t propertyBuilder = { 0 };
+    uint8_t propertyBuffer[100];
+    MQTTPropertyBuilder_Init(&propertyBuilder,
+                            propertyBuffer,
+                            sizeof(propertyBuffer));
+
     /* Remove compiler warnings about unused parameters. */
     ( void ) awsIotMqttMode;
     ( void ) pIdentifier;
@@ -630,6 +637,12 @@ int RunCoreMqttMutualAuthDemo( bool awsIotMqttMode,
         }
 
         /**************************** Disconnect. ******************************/
+        /* MQTTv5: Add disconnect properties */
+        MQTTPropAdd_ReasonString(&propertyBuilder,
+                                "Normal shutdown",
+                                strlen("Normal shutdown"),
+                                &(uint8_t){ MQTT_PACKET_TYPE_DISCONNECT });
+        MQTTSuccessFailReasonCode_t reason = MQTT_REASON_DISCONNECT_NORMAL_DISCONNECTION;
 
         if( xDemoStatus == pdPASS )
         {
@@ -637,7 +650,9 @@ int RunCoreMqttMutualAuthDemo( bool awsIotMqttMode,
              * There is no corresponding response for the disconnect packet. After sending
              * disconnect, client must close the network connection. */
             LogInfo( ( "Disconnecting the MQTT connection with %s.", democonfigMQTT_BROKER_ENDPOINT ) );
-            xMQTTStatus = MQTT_Disconnect( &xMQTTContext );
+            xMQTTStatus = MQTT_Disconnect( &xMQTTContext,
+                                           &propertyBuilder,
+                                           &reason );
         }
 
         /* We will always close the network connection, even if an error may have occurred during
@@ -838,11 +853,15 @@ static BaseType_t prvCreateMQTTConnectionWithBroker( MQTTContext_t * pxMQTTConte
     xResult = MQTT_Init( pxMQTTContext, &xTransport, prvGetTimeMs, prvEventCallback, &xBuffer );
     configASSERT( xResult == MQTTSuccess );
 
+    /* MQTTv5: allocate buffer for publish acknowledgements */
+    uint8_t propertyBuffer[500];
     xResult = MQTT_InitStatefulQoS( pxMQTTContext,
                                     pOutgoingPublishRecords,
                                     mqttexampleOUTGOING_PUBLISH_RECORD_LEN,
                                     pIncomingPublishRecords,
-                                    mqttexampleINCOMING_PUBLISH_RECORD_LEN );
+                                    mqttexampleINCOMING_PUBLISH_RECORD_LEN,
+                                    propertyBuffer,
+                                    sizeof(propertyBuffer) );
 
 
     /* Some fields are not used in this demo so start with everything at 0. */
@@ -869,13 +888,29 @@ static BaseType_t prvCreateMQTTConnectionWithBroker( MQTTContext_t * pxMQTTConte
      * the keep-alive period, the MQTT library will send PINGREQ packets. */
     xConnectInfo.keepAliveSeconds = mqttexampleKEEP_ALIVE_TIMEOUT_SECONDS;
 
+    /* MQTTv5: Create property builder to handle MQTTv5 properties */
+    MQTTPropBuilder_t connectionProperties ;
+    uint8_t buf[500] ;
+    size_t bufLength = sizeof(buf);
+    MQTTPropertyBuilder_Init(&connectionProperties, buf, bufLength) ;
+
+    /* MQTTv5: If using property builder, must set packet size */
+    MQTTPropAdd_MaxPacketSize(&connectionProperties, 1024, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT } );
+    MQTTPropAdd_RequestProbInfo(&connectionProperties, 1, NULL);
+
+    /* MQTTv5: Set connection property (e.g session expiry) if needed */
+    // uint32_t sessionExpiryInterval = 100 ; // 100ms
+    // MQTTPropAdd_SessionExpiry(&connectionProperties, sessionExpiryInterval, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT } );
+
     /* Send MQTT CONNECT packet to broker. LWT is not used in this demo, so it
      * is passed as NULL. */
     xResult = MQTT_Connect( pxMQTTContext,
                             &xConnectInfo,
                             NULL,
                             mqttexampleCONNACK_RECV_TIMEOUT_MS,
-                            &xSessionPresent );
+                            &xSessionPresent,
+                            &connectionProperties,
+                            NULL );
 
     if( xResult != MQTTSuccess )
     {
@@ -941,6 +976,16 @@ static BaseType_t prvMQTTSubscribeWithBackoffRetries( MQTTContext_t * pxMQTTCont
                                        RETRY_MAX_BACKOFF_DELAY_MS,
                                        RETRY_MAX_ATTEMPTS );
 
+    /* MQTTv5: Create property builder to handle MQTTv5 properties */
+    MQTTPropBuilder_t propertyBuilder ;
+    uint8_t buf[100] ;
+    size_t bufLength = sizeof(buf);
+    MQTTPropertyBuilder_Init(&propertyBuilder, buf, bufLength) ;
+
+    /* MQTTv5: Add properties */
+    /* WARNING: AWS does not support subscription ID */
+    //MQTTPropAdd_SubscriptionId(&propertyBuilder, 1, &(uint8_t){ MQTT_PACKET_TYPE_SUBSCRIBE } );
+
     do
     {
         /* The client is now connected to the broker. Subscribe to the topic
@@ -954,7 +999,8 @@ static BaseType_t prvMQTTSubscribeWithBackoffRetries( MQTTContext_t * pxMQTTCont
         xResult = MQTT_Subscribe( pxMQTTContext,
                                   xMQTTSubscription,
                                   sizeof( xMQTTSubscription ) / sizeof( MQTTSubscribeInfo_t ),
-                                  usSubscribePacketIdentifier );
+                                  usSubscribePacketIdentifier,
+                                  &propertyBuilder );
 
         if( xResult != MQTTSuccess )
         {
@@ -1034,8 +1080,18 @@ static BaseType_t prvMQTTPublishToTopic( MQTTContext_t * pxMQTTContext )
     /* Get a unique packet id. */
     usPublishPacketIdentifier = MQTT_GetPacketId( pxMQTTContext );
 
+    /* MQTTv5: Create property builder to handle MQTTv5 properties */
+    MQTTPropBuilder_t propertyBuilder ;
+    uint8_t buf[100] ;
+    size_t bufLength = sizeof(buf);
+    MQTTPropertyBuilder_Init(&propertyBuilder, buf, bufLength) ;
+
+    /* MQTTv5: Add publish properties */                        
+    MQTTPropAdd_PayloadFormat(&propertyBuilder, 1, &(uint8_t){ MQTT_PACKET_TYPE_PUBLISH } );
+    MQTTPropAdd_TopicAlias(&propertyBuilder, 1, &(uint8_t){ MQTT_PACKET_TYPE_PUBLISH } );
+
     /* Send PUBLISH packet. Packet ID is not used for a QoS1 publish. */
-    xResult = MQTT_Publish( pxMQTTContext, &xMQTTPublishInfo, usPublishPacketIdentifier );
+    xResult = MQTT_Publish( pxMQTTContext, &xMQTTPublishInfo, usPublishPacketIdentifier, &propertyBuilder );
 
     if( xResult != MQTTSuccess )
     {
@@ -1070,11 +1126,27 @@ static BaseType_t prvMQTTUnsubscribeFromTopic( MQTTContext_t * pxMQTTContext )
     /* Get next unique packet identifier. */
     usUnsubscribePacketIdentifier = MQTT_GetPacketId( pxMQTTContext );
 
+    /* MQTTv5: Create property builder to handle MQTTv5 properties */
+    MQTTPropBuilder_t propertyBuilder ;
+    uint8_t buf[100] ;
+    size_t bufLength = sizeof(buf);
+    MQTTPropertyBuilder_Init(&propertyBuilder, buf, bufLength) ;
+
+    /* MQTTv5: Create sample user custom property */
+    MQTTUserProperty_t userProperty = {
+        .pKey = "key",
+        .keyLength = strlen("key"),
+        .pValue = "value",
+        .valueLength = strlen("value")
+    };
+    MQTTPropAdd_UserProp(&propertyBuilder, &userProperty, &(uint8_t){ MQTT_PACKET_TYPE_UNSUBSCRIBE } );
+
     /* Send UNSUBSCRIBE packet. */
     xResult = MQTT_Unsubscribe( pxMQTTContext,
                                 xMQTTSubscription,
                                 sizeof( xMQTTSubscription ) / sizeof( MQTTSubscribeInfo_t ),
-                                usUnsubscribePacketIdentifier );
+                                usUnsubscribePacketIdentifier,
+                                &propertyBuilder );
 
     if( xResult != MQTTSuccess )
     {
