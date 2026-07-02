@@ -1385,8 +1385,10 @@ static MQTTStatus_t prvMQTTConnect( void )
     MQTTPropertyBuilder_Init(&connectionProperties, buf, bufLength) ;
 
     /* MQTTv5: If using property builder, must set packet size */
-    MQTTPropAdd_MaxPacketSize(&connectionProperties, 1024, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT } );
+    MQTTPropAdd_MaxPacketSize(&connectionProperties, MQTT_AGENT_NETWORK_BUFFER_SIZE, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT } );
     MQTTPropAdd_RequestProbInfo(&connectionProperties, 1, NULL);
+    /* MQTTv5: Tell AWS to not use topic aliases in publish, or subscription to OTA data stream will fail silently */
+    MQTTPropAdd_TopicAliasMax(&connectionProperties, 0, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT });
 
     /* Send MQTT CONNECT packet to broker. */
     xMqttStatus = MQTT_Connect( &xGlobalMqttAgentContext.mqttContext, 

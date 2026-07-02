@@ -425,6 +425,9 @@ static MQTTStatus_t prvMQTTInit( void )
     xTransport.recv = SecureSocketsTransport_Recv;
     xTransport.writev = NULL;
 
+    /* MQTTv5: allocate buffer for publish acknowledgements */
+    uint8_t propertyBuffer[500];
+
     /* Initialize MQTT library. */
     xReturn = MQTTAgent_Init( &xGlobalMqttAgentContext,
                               &messageInterface,
@@ -435,9 +438,9 @@ static MQTTStatus_t prvMQTTInit( void )
                               /* Context to pass into the callback. Passing the pointer to subscription array. */
                               NULL,
                               /* MQTTv5: Properties buffer for MQTT Agent */
-                              NULL,
-                              /* MQTTv5: Size of properties buffer. Leave as 0 if above is NULL */
-                              0 );
+                              propertyBuffer,
+                              /* MQTTv5: Size of properties buffer. */
+                              sizeof(propertyBuffer) );
 
     return xReturn;
 }
@@ -513,8 +516,10 @@ static MQTTStatus_t prvCreateMQTTConnection( bool xIsReconnect )
     MQTTPropertyBuilder_Init(&connectionProperties, buf, bufLength) ;
 
     /* MQTTv5: If using property builder, must set packet size */
-    MQTTPropAdd_MaxPacketSize(&connectionProperties, 1024, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT } );
+    MQTTPropAdd_MaxPacketSize(&connectionProperties, MQTT_AGENT_NETWORK_BUFFER_SIZE, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT } );
     MQTTPropAdd_RequestProbInfo(&connectionProperties, 1, NULL);
+    /* MQTTv5: Tell AWS to not use topic aliases in publish */
+    MQTTPropAdd_TopicAliasMax(&connectionProperties, 0, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT });
 
     LogInfo( ( "Creating an MQTT connection to the broker." ) );
 

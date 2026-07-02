@@ -76,7 +76,7 @@ bool mqttWrapper_connect( char * thingName, size_t thingNameLength )
     MQTTPropertyBuilder_Init(&connectionProperties, buf, bufLength) ;
 
     /* MQTTv5: If using property builder, must set packet size */
-    MQTTPropAdd_MaxPacketSize(&connectionProperties, 1024, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT } );
+    MQTTPropAdd_MaxPacketSize(&connectionProperties, MQTT_AGENT_NETWORK_BUFFER_SIZE, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT } );
     MQTTPropAdd_RequestProbInfo(&connectionProperties, 1, NULL);
 
     /* MQTTv5: Set connection property (e.g session expiry) if needed */
