@@ -5,6 +5,13 @@ ameba_list_append(private_sources
     ${AWS_DEMOS_OTA_DIR}/ota_demo_mqtt_streams/mqtt_agent_task.c
 )
 
+# fleet provisioning demo
+ameba_list_append(private_sources
+    ${AWS_DEMOS_FLEET_PROV_DIR}/common_operations/mqtt_operations.c
+    ${AWS_DEMOS_FLEET_PROV_DIR}/common_operations/pkcs11_operations.c
+    ${AWS_DEMOS_FLEET_PROV_DIR}/common_operations/fleet_provisioning_serializer.c
+)
+
 # demo code
 ameba_list_append(private_sources
     ${AWS_DEMOS_COMMON_DIR}/http_demo_helpers/http_demo_utils.c
@@ -23,6 +30,8 @@ ameba_list_append(private_sources
     ${AWS_DEMOS_OTA_DIR}/ota_demo_core_mqtt/ota_demo_core_mqtt.c
     ${AWS_DEMOS_OTA_DIR}/ota_demo_core_http/ota_demo_core_http.c
     ${AWS_DEMOS_OTA_DIR}/ota_demo_mqtt_streams/ota_demo_mqtt_streams.c
+    ${AWS_DEMOS_FLEET_PROV_DIR}/fleet_provisioning_keys_cert/fleet_provisioning_keys_cert_demo.c
+    ${AWS_DEMOS_FLEET_PROV_DIR}/fleet_provisioning_csr/fleet_provisioning_csr_demo.c
     ${AWS_DEMO_ENTRY_DIR}/app_example.c
     ${AWS_DEMO_ENTRY_DIR}/aws_main.c
     ${AWS_DEMO_ENTRY_DIR}/example_amazon_freertos.c

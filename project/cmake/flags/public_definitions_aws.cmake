@@ -81,6 +81,14 @@ elseif(AWS_EXAMPLE STREQUAL "ota_over_mqtt_streams")
 ameba_list_append(aws_defintions
     CONFIG_EXAMPLE_AMAZON_FREERTOS_OTA_OVER_MQTT_STREAMS=1
 )
+elseif(AWS_EXAMPLE STREQUAL "fleet_provisioning_keys_cert")
+ameba_list_append(aws_defintions
+    CONFIG_EXAMPLE_AMAZON_FREERTOS_FLEET_PROVISIONING_KEYS_CERT=1
+)
+elseif(AWS_EXAMPLE STREQUAL "fleet_provisioning_csr")
+ameba_list_append(aws_defintions
+    CONFIG_EXAMPLE_AMAZON_FREERTOS_FLEET_PROVISIONING_CSR=1
+)
 endif()
 
 ameba_list_append(public_definitions

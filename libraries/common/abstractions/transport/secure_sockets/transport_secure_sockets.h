@@ -45,6 +45,8 @@
 #include "transport_interface.h"
 #include "iot_secure_sockets.h"
 
+#include "core_pkcs11.h"
+
 /* Kernel include. */
 #include "FreeRTOS.h"
 #include "task.h"
@@ -136,6 +138,13 @@ typedef struct SocketsConfig
 
     const char * pRootCa; /**< @brief String representing a trusted server Root CA certificate. */
     size_t rootCaSize;    /**< @brief Size associated with #IotNetworkCredentials_t.pRootCa. */
+
+    /* PKCS11 for use with client auth. Set NULL for TLS_Init to use its own session */
+    CK_SESSION_HANDLE p11Session;
+    /* PKCS11 label for client cert */
+    const char* pClientCertLabel;
+    const char* pPrivateKeyLabel;
+
 } SocketsConfig_t;
 
 

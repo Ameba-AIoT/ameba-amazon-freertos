@@ -30,6 +30,8 @@
     #error "include FreeRTOS.h must appear in source files before include iot_tls.h"
 #endif
 
+#include "core_pkcs11.h"
+
 /**
  * @defgroup TlsErrors TLS Error Codes
  * @brief Error codes returned by the TLS API.
@@ -97,6 +99,13 @@ typedef struct xTLS_PARAMS
     NetworkRecv_t pxNetworkRecv;
     NetworkSend_t pxNetworkSend;
     void * pvCallerContext;
+
+    /** PKCS #11 session. CK_INVALID_HANDLE = manage internally (existing behaviour) */
+    CK_SESSION_HANDLE p11Session;
+    /** Client cert label */
+    const char * pClientCertLabel;
+    /** Client key label */
+    const char * pPrivateKeyLabel;   
 } TLSParams_t;
 
 /**

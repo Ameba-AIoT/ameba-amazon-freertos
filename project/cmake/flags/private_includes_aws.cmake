@@ -32,6 +32,9 @@ ameba_list_append(aws_includes
     ${AWS_DEMOS_DEVICE_DEFENDER_DIR}
     ${AWS_DEMOS_DEV_MODE_KEY_PROV_DIR}/include
     ${AWS_DEMOS_OTA_DIR}/ota_demo_mqtt_streams
+    ${AWS_DEMOS_FLEET_PROV_DIR}/config
+    ${AWS_DEMOS_FLEET_PROV_DIR}/common_operations
+    ${AWS_DEMOS_FLEET_PROV_DIR}/fleet_provisioning_keys_cert
     ${AWS_DEMO_ENTRY_DIR}
 )
 
@@ -46,6 +49,7 @@ ameba_list_append(aws_includes
     ${AWS_CORE_PKCS11_DIR}/source/dependency/3rdparty/pkcs11/published/2-40-errata-1
     ${AWS_CORE_PKCS11_DIR}/source/dependency/3rdparty/pkcs11
     ${AWS_CORE_PKCS11_DIR}/source/include
+    ${AWS_CORE_PKCS11_DIR}/source/dependency/3rdparty/mbedtls_utils/
 )
 
 # abstractions
@@ -131,9 +135,15 @@ ameba_list_append(aws_includes
     ${AWS_MQTT_FILE_STREAMS_DIR}/source/include
 )
 
+# fleet provisioning
+ameba_list_append(aws_includes
+    ${AWS_FLEET_PROVISIONING_DIR}/source/include
+)
+
 ameba_list_append(private_includes
     ${AWS_PORTS_DIR}/config_files
     ${AWS_PORTS_DIR}/ota
+    ${AWS_PORTS_DIR}/pkcs11
 )
 
 ameba_list_append(private_includes
