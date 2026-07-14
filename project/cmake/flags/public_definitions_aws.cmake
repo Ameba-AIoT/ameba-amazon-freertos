@@ -7,6 +7,7 @@ ameba_list_append(aws_defintions
     MBEDTLS_THREADING_ALT
     MBEDTLS_ALLOW_PRIVATE_ACCESS=1
     MBEDTLS_SSL_DTLS_CONNECTION_ID_COMPAT=0
+    MBEDTLS_ENTROPY_HARDWARE_ALT
 
     # FreeRTOS Amazon Definitions
     configPRINTF=vLoggingPrintf
@@ -39,6 +40,10 @@ ameba_list_append(aws_defintions
 elseif(CONFIG_AMEBASMART)
 ameba_list_append(aws_defintions
     configPLATFORM_NAME="RealtekAmebaSmart"
+)
+elseif(CONFIG_AMEBAGREEN2)
+ameba_list_append(aws_defintions
+    configPLATFORM_NAME="RealtekAmebaGreen2"
 )
 else()
 ameba_list_append(aws_defintions

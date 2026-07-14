@@ -18,7 +18,11 @@ ameba_list_append(private_includes
 )
 elseif(CONFIG_AMEBASMART)
 ameba_list_append(public_includes
-    ${FREERTOS_DIR}/portable/GCC/ARM_CA7
+    ${c_FREERTOS_DIR}/portable/GCC/ARM_CA7
+)
+elseif(CONFIG_AMEBAGREEN2)
+ameba_list_append(public_includes
+    ${c_FREERTOS_DIR}/portable/GCC/AmebaGreen2_KM4
 )
 endif()
 
