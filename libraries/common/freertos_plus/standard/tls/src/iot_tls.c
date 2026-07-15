@@ -151,6 +151,11 @@ typedef struct TLSContext
     CK_SESSION_HANDLE xP11Session;
     CK_OBJECT_HANDLE xP11PrivateKey;
     CK_KEY_TYPE xKeyType;
+
+    /* Session Ownership */
+    CK_BBOOL xSessionOwned;
+    const char * pcClientCertLabel;
+    const char * pcPrivateKeyLabel;
 } TLSContext_t;
 
 #define TLS_HANDSHAKE_NOT_STARTED    ( 0 )      /* Must be 0 */
@@ -186,7 +191,9 @@ static void prvFreeContext( TLSContext_t * pxCtx )
         mbedtls_ctr_drbg_free( &pxCtx->xMbedDrbgCtx );
 
         /* Cleanup PKCS11 session. */
-        if( ( NULL != pxCtx->pxP11FunctionList ) &&
+        //if( ( NULL != pxCtx->pxP11FunctionList ) &&
+        if( pxCtx->xSessionOwned &&
+            ( NULL != pxCtx->pxP11FunctionList ) &&
             ( NULL != pxCtx->pxP11FunctionList->C_CloseSession ) &&
             ( CK_INVALID_HANDLE != pxCtx->xP11Session ) )
         {
@@ -425,7 +432,13 @@ static int prvPrivateKeySigningCallback( void * pvContext,
 }
 
 /*-----------------------------------------------------------*/
-
+static void print_sha256(const unsigned char *buf, size_t len)
+{
+    unsigned char hash[32];
+    mbedtls_sha256(buf, len, hash, 0);
+    for (int i = 0; i < 32; i++) printf("%02x", hash[i]);
+    printf("\n");
+}
 /**
  * @brief Helper for reading the specified certificate object, if present,
  * out of storage, into RAM, and then into an mbedTLS certificate context
@@ -498,6 +511,8 @@ static int prvReadCertificateIntoContext( TLSContext_t * pxTlsContext,
                                           ( const unsigned char * ) xTemplate.pValue,
                                           xTemplate.ulValueLen );
     }
+    printf("prvReadCertificateIntoContext Label:%s SHA256: ", pcLabelName);
+    print_sha256(xTemplate.pValue, xTemplate.ulValueLen);
 
     /* Free memory. */
     if( NULL != xTemplate.pValue )
@@ -573,6 +588,14 @@ static int prvInitializeClientCredential( TLSContext_t * pxCtx )
     mbedtls_pk_type_t xKeyAlgo = ( mbedtls_pk_type_t ) ~0;
     char * pcJitrCertificate = keyJITR_DEVICE_CERTIFICATE_AUTHORITY_PEM;
 
+    /* Fetch PKCS11 object labels if set */
+    const char * pcPrivKeyLabel = ( pxCtx->pcPrivateKeyLabel != NULL )
+        ? pxCtx->pcPrivateKeyLabel
+        : pkcs11configLABEL_DEVICE_PRIVATE_KEY_FOR_TLS;
+    const char * pcCertLabel = ( pxCtx->pcClientCertLabel != NULL )
+        ? pxCtx->pcClientCertLabel
+        : pkcs11configLABEL_DEVICE_CERTIFICATE_FOR_TLS;
+
     /* Initialize the mbed contexts. */
     mbedtls_x509_crt_init( &pxCtx->xMbedX509Cli );
 
@@ -596,8 +619,10 @@ static int prvInitializeClientCredential( TLSContext_t * pxCtx )
     {
         /* Get the handle of the device private key. */
         xResult = xFindObjectWithLabelAndClass( pxCtx->xP11Session,
-                                                pkcs11configLABEL_DEVICE_PRIVATE_KEY_FOR_TLS,
-                                                sizeof( pkcs11configLABEL_DEVICE_PRIVATE_KEY_FOR_TLS ) - 1,
+                                                //pkcs11configLABEL_DEVICE_PRIVATE_KEY_FOR_TLS,
+                                                //sizeof( pkcs11configLABEL_DEVICE_PRIVATE_KEY_FOR_TLS ) - 1,
+                                                pcPrivKeyLabel,
+                                                strlen( pcPrivKeyLabel ),
                                                 CKO_PRIVATE_KEY,
                                                 &pxCtx->xP11PrivateKey );
     }
@@ -653,11 +678,11 @@ static int prvInitializeClientCredential( TLSContext_t * pxCtx )
     if( xResult == CKR_OK )
     {
         xResult = prvReadCertificateIntoContext( pxCtx,
-                                                 pkcs11configLABEL_DEVICE_CERTIFICATE_FOR_TLS,
+                                                 // pkcs11configLABEL_DEVICE_CERTIFICATE_FOR_TLS,
+                                                 ( char * ) pcCertLabel,
                                                  CKO_CERTIFICATE,
                                                  &pxCtx->xMbedX509Cli );
     }
-
     /* Add a Just-in-Time Registration (JITR) device issuer certificate, if
      * present, to the TLS context handle. */
     if( xResult == CKR_OK )
@@ -772,20 +797,40 @@ BaseType_t TLS_Init( void ** ppvContext,
         pxCtx->xNetworkSend = pxParams->pxNetworkSend;
         pxCtx->pvCallerContext = pxParams->pvCallerContext;
 
+        /* Copy label selection (NULL is valid; fallback applied in prvInitializeClientCredential). */
+        pxCtx->pcClientCertLabel = pxParams->pClientCertLabel;
+        pxCtx->pcPrivateKeyLabel = pxParams->pPrivateKeyLabel;
+
         /* Get the function pointer list for the PKCS#11 module. */
         xCkGetFunctionList = C_GetFunctionList;
         xResult = ( BaseType_t ) xCkGetFunctionList( &pxCtx->pxP11FunctionList );
 
-        /* Ensure that the PKCS #11 module is initialized and create a session. */
+        /* Ensure PKCS #11 is initialized; use caller's session if provided. */
         if( xResult == CKR_OK )
         {
-            xResult = xInitializePkcs11Session( &pxCtx->xP11Session );
+            // xResult = xInitializePkcs11Session( &pxCtx->xP11Session );
 
-            /* It is ok if the module was previously initialized. */
-            if( xResult == CKR_CRYPTOKI_ALREADY_INITIALIZED )
+            // /* It is ok if the module was previously initialized. */
+            // if( xResult == CKR_CRYPTOKI_ALREADY_INITIALIZED )
+            if( pxParams->p11Session != CK_INVALID_HANDLE )
             {
-                xResult = CKR_OK;
+                //xResult = CKR_OK;
+                /* Caller owns this session; TLS layer must not close it. */
+                pxCtx->xP11Session = pxParams->p11Session;
+                pxCtx->xSessionOwned = CK_FALSE;
+            } 
+            else 
+            {
+                xResult = xInitializePkcs11Session( &pxCtx->xP11Session );
+
+                /* It is ok if the module was previously initialized. */
+                if( xResult == CKR_CRYPTOKI_ALREADY_INITIALIZED )
+                {
+                    xResult = CKR_OK;
+                }
+                pxCtx->xSessionOwned = CK_TRUE;
             }
+
         }
 
         if( xResult == CKR_OK )

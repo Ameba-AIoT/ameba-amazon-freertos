@@ -45,6 +45,18 @@
  */
 #define clientcredentialIOT_THING_NAME               ""
 
+#define clientcredentialIOT_SERIAL_NUMBER            ""
+#define clientcredential_IOT_PROVISIONING_TEMPLATE_NAME ""
+/**
+ * @brief The unique ID used by the demo to differentiate instances.
+ *
+ *!!! Please note a #defined constant is used for convenience of demonstration
+ *!!! only.  Production devices can use something unique to the device that can
+ *!!! be read by software, such as a production serial number, instead of a
+ *!!! hard coded constant.
+ */
+#define clientcredentialFP_DEMO_ID    "FPDemoID"__TIME__
+#define clientcredentialCSR_SUBJECT_NAME "CN="clientcredentialFP_DEMO_ID
 /*
  * @brief Port number the MQTT broker is using.
  */

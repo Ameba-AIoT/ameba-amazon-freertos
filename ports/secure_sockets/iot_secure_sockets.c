@@ -82,6 +82,11 @@ typedef struct _ss_ctx_t
 
     char ** ppcAlpnProtocols;
     uint32_t ulAlpnProtocolsCount;
+
+    /* For PKCS11 auth */
+    CK_SESSION_HANDLE p11Session;
+    const char * pClientCertLabel;
+    const char * pPrivateKeyLabel;
 } ss_ctx_t;
 
 /*-----------------------------------------------------------*/
@@ -370,6 +375,9 @@ int32_t SOCKETS_Connect( Socket_t xSocket,
             tls_params.pxNetworkSend             = prvNetworkSend;
             tls_params.ppcAlpnProtocols          = ( const char ** ) ctx->ppcAlpnProtocols;
             tls_params.ulAlpnProtocolsCount      = ctx->ulAlpnProtocolsCount;
+            tls_params.p11Session                = ctx->p11Session;
+            tls_params.pClientCertLabel          = ctx->pClientCertLabel;
+            tls_params.pPrivateKeyLabel          = ctx->pPrivateKeyLabel;
 
             status = TLS_Init( &ctx->tls_ctx, &tls_params );
 
@@ -815,6 +823,30 @@ int32_t SOCKETS_SetSockOpt( Socket_t xSocket,
                 }
             }
 
+            break;
+
+        case SOCKETS_SO_PKCS11_SESSION:
+            if( ( pvOptionValue == NULL ) || ( xOptionLength != sizeof( CK_SESSION_HANDLE ) ) )
+            {
+                return SOCKETS_EINVAL;
+            }
+            ctx->p11Session = *( ( const CK_SESSION_HANDLE * ) pvOptionValue );
+            break;
+
+        case SOCKETS_SO_CLIENT_CERT_LABEL:
+            if( ( pvOptionValue == NULL ) || ( xOptionLength == 0 ) )
+            {
+                return SOCKETS_EINVAL;
+            }
+            ctx->pClientCertLabel = ( const char * ) pvOptionValue;
+            break;
+        
+        case SOCKETS_SO_CLIENT_KEY_LABEL:
+            if( ( pvOptionValue == NULL ) || ( xOptionLength == 0 ) )
+            {
+                return SOCKETS_EINVAL;
+            }
+            ctx->pPrivateKeyLabel = ( const char * ) pvOptionValue;
             break;
 
         default:

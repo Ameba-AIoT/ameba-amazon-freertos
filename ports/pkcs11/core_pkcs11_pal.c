@@ -31,6 +31,7 @@
 /* FreeRTOS Includes. */
 #include "core_pkcs11.h"
 #include "core_pkcs11_config.h"
+#include "core_pkcs11_pal.h"
 #include "FreeRTOS.h"
 
 /* C runtime includes. */
@@ -49,12 +50,7 @@
 
 #define pkcs11OBJECT_CERTIFICATE_MAX_SIZE    4096
 #define pkcs11OBJECT_FLASH_CERT_PRESENT      ( 0x22ABCDEFuL ) //magic number for check flash data
-#if 0 // move to example_amazon_freertos.h
-#define pkcs11OBJECT_CERT_FLASH_OFFSET       ( 0x1DC000 ) //Flash location for CERT
-#define pkcs11OBJECT_PRIV_KEY_FLASH_OFFSET   ( 0x1DD000 ) //Flash location for Priv Key
-#define pkcs11OBJECT_PUB_KEY_FLASH_OFFSET    ( 0x1DE000 ) //Flash location for Pub Key
-#define pkcs11OBJECT_VERIFY_KEY_FLASH_OFFSET ( 0x1DF000 ) //Flash location for code verify Key
-#endif
+
 /*
  * Flash Format
  * | Flash Mark(4) | checksum(4) | DataLen(4) |  Data |
@@ -63,15 +59,6 @@
 #define FLASH_CHECKSUM_OFFSET  4
 #define FLASH_DATALEN_OFFSET   8
 #define FLASH_DATA_OFFSET     12
-
-enum eObjectHandles
-{
-    eInvalidHandle = 0, /* According to PKCS #11 spec, 0 is never a valid object handle. */
-    eAwsDevicePrivateKey = 1,
-    eAwsDevicePublicKey,
-    eAwsDeviceCertificate,
-    eAwsCodeSigningKey
-};
 
 void prvLabelToFlashAddrHandle( uint8_t * pcLabel,
                                uint32_t * pcFlashAddress,
@@ -107,6 +94,34 @@ void prvLabelToFlashAddrHandle( uint8_t * pcLabel,
         {
         	*pcFlashAddress = pkcs11OBJECT_VERIFY_KEY_FLASH_OFFSET;
             *pHandle = eAwsCodeSigningKey;
+        }
+        else if( 0 == memcmp( pcLabel,
+                              &pkcs11configLABEL_CLAIM_CERTIFICATE,
+                              sizeof( pkcs11configLABEL_CLAIM_CERTIFICATE ) ) )
+        {
+            *pcFlashAddress = pkcs11OBJECT_CLAIM_CERT_FLASH_OFFSET;
+            *pHandle = eAwsClaimCertificate;
+        }
+        else if( 0 == memcmp( pcLabel,
+                              &pkcs11configLABEL_CLAIM_PRIVATE_KEY,
+                              sizeof( pkcs11configLABEL_CLAIM_PRIVATE_KEY ) ) )
+        {
+            *pcFlashAddress = pkcs11OBJECT_CLAIM_PRIV_KEY_FLASH_OFFSET;
+            *pHandle = eAwsClaimPrivateKey;
+        }
+        else if( 0 == memcmp( pcLabel,
+                              &pkcs11configLABEL_JITP_CERTIFICATE,
+                              sizeof( pkcs11configLABEL_JITP_CERTIFICATE ) ) )
+        {
+            *pcFlashAddress = pkcs11OBJECT_JITP_CERT_FLASH_OFFSET;
+            *pHandle = eAwsJitpCertificate;
+        }
+        else if( 0 == memcmp( pcLabel,
+                              &pkcs11configLABEL_THING_NAME,
+                              sizeof( pkcs11configLABEL_THING_NAME ) ) )
+        {
+            *pcFlashAddress = pkcs11OBJECT_THING_NAME_OFFSET;
+            *pHandle = eAwsThingName;
         }
         else
         {
@@ -266,6 +281,21 @@ CK_RV PKCS11_PAL_GetObjectValue( CK_OBJECT_HANDLE xHandle,
 			pcFlashAddr = pkcs11OBJECT_VERIFY_KEY_FLASH_OFFSET;
 			*pIsPrivate = CK_FALSE;
 			break;
+        case eAwsClaimCertificate:
+            pcFlashAddr = pkcs11OBJECT_CLAIM_CERT_FLASH_OFFSET;
+            *pIsPrivate = CK_FALSE;
+            break;
+        case eAwsClaimPrivateKey:
+            pcFlashAddr = pkcs11OBJECT_CLAIM_PRIV_KEY_FLASH_OFFSET;
+            *pIsPrivate = CK_TRUE;
+            break;
+        case eAwsJitpCertificate:
+            pcFlashAddr = pkcs11OBJECT_JITP_CERT_FLASH_OFFSET;
+            *pIsPrivate = CK_FALSE;
+            break;
+        case eAwsThingName:
+            pcFlashAddr = pkcs11OBJECT_THING_NAME_OFFSET;
+            *pIsPrivate = CK_FALSE;
 		default:
 			xReturn = CKR_KEY_HANDLE_INVALID;
 			break;
@@ -301,7 +331,9 @@ CK_RV PKCS11_PAL_GetObjectValue( CK_OBJECT_HANDLE xHandle,
 		}else{
 			xReturn = CKR_KEY_HANDLE_INVALID;
 		}
-	}
+	} else {
+        printf("PKCS11 PAL Error: Failed to get flash addr for HANDLE: %d\n", xHandle);
+    }
 
 exit:
     return xReturn;
@@ -358,59 +390,47 @@ void prvHandleToLabel( char ** pcLabel,
 
 CK_RV PKCS11_PAL_DestroyObject( CK_OBJECT_HANDLE xHandle )
 {
-    CK_RV xResult = CKR_OK;
     CK_BYTE_PTR pxZeroedData = NULL;
     CK_BYTE_PTR pxObject = NULL;
     CK_BBOOL xIsPrivate = ( CK_BBOOL ) CK_TRUE;
-    CK_OBJECT_HANDLE xPalHandle2 = CK_INVALID_HANDLE;
     CK_ULONG ulObjectLength = sizeof( CK_BYTE );
     char * pcLabel = NULL;
+    uint32_t pcFlashAddr = 0;
+    CK_OBJECT_HANDLE xIgnored;
     CK_ATTRIBUTE xLabel;
+    flash_t flash;
 
     prvHandleToLabel( &pcLabel, xHandle );
 
-    if( pcLabel != NULL )
-    {
-        xLabel.type = CKA_LABEL;
-        xLabel.pValue = pcLabel;
-        xLabel.ulValueLen = strlen( pcLabel );
+    if( pcLabel == NULL )
+        return CKR_OBJECT_HANDLE_INVALID;
 
-        xResult = PKCS11_PAL_GetObjectValue( xHandle, &pxObject, &ulObjectLength, &xIsPrivate );
-    }
-    else
-    {
-        xResult = CKR_OBJECT_HANDLE_INVALID;
-    }
+    prvLabelToFlashAddrHandle( ( uint8_t * ) pcLabel, &pcFlashAddr, &xIgnored );
 
-    if( xResult == CKR_OK )
-    {
-        /* Some ports return a pointer to memory for which using memset directly won't work. */
-        pxZeroedData = pvPortMalloc( ulObjectLength * sizeof( CK_BYTE ) );
+    if( pcFlashAddr == 0 )
+        return CKR_OBJECT_HANDLE_INVALID;
 
-        if( NULL != pxZeroedData )
+    xLabel.type = CKA_LABEL;
+    xLabel.pValue = pcLabel;
+    xLabel.ulValueLen = strlen( pcLabel );
+
+    if( PKCS11_PAL_GetObjectValue( xHandle, &pxObject, &ulObjectLength, &xIsPrivate ) == CKR_OK )
+    {
+        pxZeroedData = pvPortMalloc( ulObjectLength );
+
+        if( pxZeroedData != NULL )
         {
-            /* Zero out the object. */
-            ( void ) memset( pxZeroedData, 0x0, ulObjectLength );
-            /* Create an object label attribute. */
-            /* Overwrite the object in NVM with zeros. */
-            xPalHandle2 = PKCS11_PAL_SaveObject( &xLabel, pxZeroedData, ( size_t ) ulObjectLength );
-
-            if( xPalHandle2 != xHandle )
-            {
-                xResult = CKR_GENERAL_ERROR;
-            }
-
+            memset( pxZeroedData, 0x0, ulObjectLength );
+            PKCS11_PAL_SaveObject( &xLabel, pxZeroedData, ulObjectLength );
             vPortFree( pxZeroedData );
-        }
-        else
-        {
-            xResult = CKR_HOST_MEMORY;
         }
 
         PKCS11_PAL_GetObjectValueCleanup( pxObject, ulObjectLength );
     }
 
-    return xResult;
+    flash_erase_sector( &flash, pcFlashAddr );
+
+    return CKR_OK;
 }
 
 #if (defined(CONFIG_MBEDTLS_AMAZON_DEFINED) && (CONFIG_MBEDTLS_AMAZON_DEFINED == 1))

@@ -32,6 +32,7 @@ set(AWS_DEVICE_SHADOW_DIR     "${AWS_LIBRARIES_DIR}/device_shadow_for_aws")
 set(AWS_JOBS_DIR              "${AWS_LIBRARIES_DIR}/jobs_for_aws")
 set(AWS_OTA_DIR               "${AWS_LIBRARIES_DIR}/ota_for_aws")
 set(AWS_MQTT_FILE_STREAMS_DIR "${AWS_LIBRARIES_DIR}/mqtt_file_streams_for_aws")
+set(AWS_FLEET_PROVISIONING_DIR "${AWS_LIBRARIES_DIR}/fleet_provisioning_for_aws")
 
 # Amazon FreeRTOS demos Subdirectories
 #----------------------------------------#
@@ -43,6 +44,7 @@ set(AWS_DEMOS_JOBS_DIR              "${AWS_DEMOS_DIR}/jobs_for_aws")
 set(AWS_DEMOS_CORE_HTTP_DIR         "${AWS_DEMOS_DIR}/coreHTTP")
 set(AWS_DEMOS_CORE_MQTT_DIR         "${AWS_DEMOS_DIR}/coreMQTT")
 set(AWS_DEMOS_DEV_MODE_KEY_PROV_DIR "${AWS_DEMOS_DIR}/dev_mode_key_provisioning")
+set(AWS_DEMOS_FLEET_PROV_DIR        "${AWS_DEMOS_DIR}/fleet_provisioning")
 
 set(AWS_DEMO_ENTRY_DIR              "${AWS_DEMOS_DIR}/demo_entry")
 
@@ -57,6 +59,8 @@ set(AWS_ALL_EXAMPLES
     "ota_over_mqtt"
     "ota_over_http"
     "ota_over_mqtt_streams"
+    "fleet_provisioning_keys_cert"
+    "fleet_provisioning_csr"
 )
 
 # Check if example exists in the list

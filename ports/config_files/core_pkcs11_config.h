@@ -106,7 +106,7 @@
  * If set to 0, no PAL destroy object is implemented, and this functionality
  * is implemented in the common PKCS #11 layer.
  */
-#define pkcs11configPAL_DESTROY_SUPPORTED                  0
+#define pkcs11configPAL_DESTROY_SUPPORTED                  1
 
 /**
  * @brief Set to 1 if OTA image verification via PKCS #11 module is supported.
@@ -170,7 +170,14 @@
  */
 #define pkcs11configLABEL_ROOT_CERTIFICATE                 "Root Cert"
 
+#define pkcs11configLABEL_CLAIM_CERTIFICATE                "Claim Cert"
+#define pkcs11configLABEL_CLAIM_PRIVATE_KEY                "Claim Key"
+#define pkcs11configLABEL_THING_NAME                       "Thing Name"
+
 /* development mode - parse key from plain text code */
-#define KEY_PLAINTEXT	1
+#define KEY_PLAINTEXT	0
+
+#define DOWNLOADED_CERT_LABEL        pkcs11configLABEL_DEVICE_CERTIFICATE_FOR_TLS
+#define DOWNLOADED_PRIVATE_KEY_LABEL pkcs11configLABEL_DEVICE_PRIVATE_KEY_FOR_TLS
 
 #endif /* _AWS_PKCS11_CONFIG_H_ include guard. */

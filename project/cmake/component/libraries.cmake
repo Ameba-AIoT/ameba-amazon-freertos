@@ -114,3 +114,8 @@ ameba_list_append(private_sources
     ${AWS_MQTT_FILE_STREAMS_DIR}/source/MQTTFileDownloader_cbor.c
     ${AWS_MQTT_FILE_STREAMS_DIR}/source/MQTTFileDownloader_base64.c
 )
+
+# fleet provisioning
+ameba_list_append(private_sources
+    ${AWS_FLEET_PROVISIONING_DIR}/source/fleet_provisioning.c
+)

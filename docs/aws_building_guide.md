@@ -38,6 +38,10 @@ The following commands represent the primary examples supported within the Realt
     aws_build_proj ota_over_http
     aws_build_proj ota_over_mqtt_streams
 
+    # Build the Fleet Provisioning demos
+    aws_build_proj fleet_provisioning_keys_cert
+    aws_build_proj fleet_provisioning_csr
+
 ### Additional References
 
 - For a detailed walkthrough of each example’s logic and implementation, please refer to [Realtek AWS Examples Guide](aws_examples_guide.md).

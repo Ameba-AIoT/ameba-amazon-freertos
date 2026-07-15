@@ -1,0 +1,14 @@
+#ifndef AWS_CLIENT_CREDENTIAL_FLEET_H
+#define AWS_CLIENT_CREDENTIAL_FLEET_H
+
+#define keyFLEET_CLAIM_CERTIFICATE_PEM \
+"-----BEGIN CERTIFICATE-----\n"\
+"...\n"\
+"-----END CERTIFICATE-----\n"
+
+#define keyFLEET_CLAIM_PRIVATE_KEY_PEM \
+"-----BEGIN RSA PRIVATE KEY-----\n"\
+"...\n"\
+"-----END RSA PRIVATE KEY-----\n"
+
+#endif

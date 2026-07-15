@@ -1407,6 +1407,9 @@ static MQTTStatus_t prvMqttAgentInit( void )
     xTransport.recv = SecureSocketsTransport_Recv;
     xTransport.writev = NULL;
 
+    /* MQTTv5: allocate buffer for publish acknowledgements */
+    uint8_t propertyBuffer[500];
+
     /* Initialize MQTT Agent. */
     xReturn = MQTTAgent_Init( &xGlobalMqttAgentContext,
                               &xMessageInterface,
@@ -1415,11 +1418,11 @@ static MQTTStatus_t prvMqttAgentInit( void )
                               prvGetTimeMs,
                               prvIncomingPublishCallback,
                               /* Context to pass into the callback. Passing the pointer to subscription array. */
-                              NULL,
+                              pxGlobalSubscriptionList,
                               /* MQTTv5: Properties buffer for MQTT Agent */
-                              NULL,
-                              /* MQTTv5: Size of properties buffer. Leave as 0 if above is NULL */
-                              0 );
+                              propertyBuffer,
+                              /* MQTTv5: Size of properties buffer. */
+                              sizeof(propertyBuffer) );
 
     return xReturn;
 }
@@ -1523,12 +1526,15 @@ static MQTTStatus_t prvMQTTConnect( void )
     MQTTPropertyBuilder_Init(&connectionProperties, buf, bufLength) ;
 
     /* MQTTv5: If using property builder, must set packet size */
-    MQTTPropAdd_MaxPacketSize(&connectionProperties, 1024, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT } );
+    MQTTPropAdd_MaxPacketSize(&connectionProperties, MQTT_AGENT_NETWORK_BUFFER_SIZE, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT } );
     MQTTPropAdd_RequestProbInfo(&connectionProperties, 1, NULL);
 
     /* MQTTv5: Set connection property (e.g session expiry) if needed */
     // uint32_t sessionExpiryInterval = 100 ; // 100ms
     // MQTTPropAdd_SessionExpiry(&connectionProperties, sessionExpiryInterval, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT } );
+
+    /* MQTTv5: Tell AWS to not use topic aliases in publish, or subscription to OTA data stream will fail silently */
+    MQTTPropAdd_TopicAliasMax(&connectionProperties, 0, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT });
 
     /* Send MQTT CONNECT packet to broker. */
     xMqttStatus = MQTT_Connect( &xGlobalMqttAgentContext.mqttContext,

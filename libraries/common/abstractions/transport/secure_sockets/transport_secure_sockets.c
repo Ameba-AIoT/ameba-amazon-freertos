@@ -303,6 +303,34 @@ static int32_t tlsSetup( const SocketsConfig_t * pSocketsConfig,
         }
     }
 
+    /* Set PKCS11 Session if any, or skip */
+    if( ( secureSocketStatus == SOCKETS_ERROR_NONE ) &&
+        ( pSocketsConfig->pClientCertLabel != NULL ) )
+    {
+        secureSocketStatus = SOCKETS_SetSockOpt( tcpSocket, 0,
+                                        SOCKETS_SO_PKCS11_SESSION,
+                                        &pSocketsConfig->p11Session,
+                                        sizeof( pSocketsConfig->p11Session ) );
+    }
+
+    if( ( secureSocketStatus == SOCKETS_ERROR_NONE ) &&
+        ( pSocketsConfig->pClientCertLabel != NULL ) )
+    {
+        secureSocketStatus = SOCKETS_SetSockOpt( tcpSocket, 0,
+                                        SOCKETS_SO_CLIENT_CERT_LABEL,
+                                        pSocketsConfig->pClientCertLabel,
+                                        strlen( pSocketsConfig->pClientCertLabel ) );
+    }
+
+    if( ( secureSocketStatus == SOCKETS_ERROR_NONE ) &&
+        ( pSocketsConfig->pPrivateKeyLabel != NULL ) )
+    {
+        secureSocketStatus = SOCKETS_SetSockOpt( tcpSocket, 0,
+                                        SOCKETS_SO_CLIENT_KEY_LABEL,
+                                        pSocketsConfig->pPrivateKeyLabel,
+                                        strlen( pSocketsConfig->pPrivateKeyLabel ) );
+    }
+
     return secureSocketStatus;
 }
 
