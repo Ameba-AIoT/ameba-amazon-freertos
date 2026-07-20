@@ -555,6 +555,7 @@ int RunCoreMqttMutualAuthDemo( bool awsIotMqttMode,
         /****************************** Connect. ******************************/
 
         /* Wait for Networking */
+        LogInfo( ( "ABCDEFGHIJKLMNOPQRSTUVWXYZ\n" ) );
         RTK_SDK_CHECK_CONNECTIVITY();
 
         /* Attempt to establish TLS session with MQTT broker. If connection fails,
