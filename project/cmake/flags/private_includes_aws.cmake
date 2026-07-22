@@ -131,9 +131,15 @@ ameba_list_append(aws_includes
     ${AWS_MQTT_FILE_STREAMS_DIR}/source/include
 )
 
-ameba_list_append(private_includes
+# ports
+ameba_list_append(aws_includes
     ${AWS_PORTS_DIR}/config_files
     ${AWS_PORTS_DIR}/ota
+)
+
+# to access pk_*.h for iot_tls.c
+ameba_list_append(aws_includes
+    ${c_MBEDTLS_DIR}/library
 )
 
 ameba_list_append(private_includes

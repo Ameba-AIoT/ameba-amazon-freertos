@@ -67,7 +67,13 @@ typedef struct demoContext
 #if defined(CONFIG_AMEBADPLUS) || defined(CONFIG_AMEBAGREEN2) || defined(CONFIG_AMEBASMART) || defined(CONFIG_AMEBALITE)
 #include "ameba_rtos_version.h"
 /* For ameba-rtos supported boards */
-#if defined(AMEBA_RTOS_VERSION_MAJOR) && (AMEBA_RTOS_VERSION_MAJOR >= 1) && defined(AMEBA_RTOS_VERSION_MINOR) && (AMEBA_RTOS_VERSION_MINOR >= 1)
+#if defined(AMEBA_RTOS_VERSION_MAJOR) && (AMEBA_RTOS_VERSION_MAJOR >= 1) && defined(AMEBA_RTOS_VERSION_MINOR) && (AMEBA_RTOS_VERSION_MINOR >= 2)
+#include "lwip_netconf.h"
+#define RTK_SDK_CHECK_CONNECTIVITY() do { \
+    LogInfo( ( "Waiting for the network link up event..." ) ); \
+    vTaskDelay( pdMS_TO_TICKS( 2000U ) ); \
+} while( lwip_check_connectivity(0) == CONNECTION_INVALID)
+#elif defined(AMEBA_RTOS_VERSION_MAJOR) && (AMEBA_RTOS_VERSION_MAJOR >= 1) && defined(AMEBA_RTOS_VERSION_MINOR) && (AMEBA_RTOS_VERSION_MINOR >= 1)
 /* if SDK version is 1.1, use LwIP_Check_Connectivity API*/
 #define RTK_SDK_CHECK_CONNECTIVITY() LwIP_Check_Connectivity()
 #else

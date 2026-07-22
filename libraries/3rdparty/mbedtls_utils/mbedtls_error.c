@@ -144,7 +144,7 @@
 #if MBEDTLS_VERSION_MAJOR <= 2
     #include "mbedtls/padlock.h"
 #else
-    #include "mbedtls/library/padlock.h"
+    #include "padlock.h"
 #endif
 #endif
 

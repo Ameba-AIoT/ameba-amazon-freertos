@@ -181,7 +181,7 @@
 /**
  * @brief Maximum stack size of OTA agent task.
  */
-#define otaexampleAGENT_TASK_STACK_SIZE          ( 4096 * 2 )
+#define otaexampleAGENT_TASK_STACK_SIZE          ( 4 * 1024 )
 
 
 #define CONFIG_MAX_FILE_SIZE                     200 /* TODO:!! */
