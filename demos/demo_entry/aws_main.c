@@ -80,6 +80,18 @@ extern int RunOtaCoreMqttStreamsDemo( bool xAwsIotMqttMode,
                                void * pNetworkServerInfo,
                                void * pNetworkCredentialInfo,
                                const IotNetworkInterface_t * pxNetworkInterface );
+
+extern int RunFleetProvisioningKeyCertDemo( bool xAwsIotMqttMode,
+                               const char * pIdentifier,
+                               void * pNetworkServerInfo,
+                               void * pNetworkCredentialInfo,
+                               const IotNetworkInterface_t * pxNetworkInterface );
+
+// extern int RunFleetProvisioningCsrDemo( bool xAwsIotMqttMode,
+//                                const char * pIdentifier,
+//                                void * pNetworkServerInfo,
+//                                void * pNetworkCredentialInfo,
+//                                const IotNetworkInterface_t * pxNetworkInterface );
 /*-----------------------------------------------------------*/
 /**
  * @brief Application runtime entry point.
@@ -93,10 +105,10 @@ int aws_main( void )
 
     CRYPTO_ConfigureThreading();
 
-    #if defined(KEY_PLAINTEXT) && (KEY_PLAINTEXT == 0)
+#if defined(KEY_PLAINTEXT) && (KEY_PLAINTEXT == 0)
     // handle keys with pkcs11
-    vDevModeKeyProvisioning();
-    #endif
+    //vDevModeKeyProvisioning();
+#endif
 
     uint8_t * pucClientPrivateKey = ( uint8_t * ) keyCLIENT_PRIVATE_KEY_PEM;
     uint8_t * pucClientCertificate = ( uint8_t * ) keyCLIENT_CERTIFICATE_PEM;
@@ -132,11 +144,23 @@ int aws_main( void )
     RunOtaCoreMqttDemo(0, NULL, NULL, NULL, NULL);
 #endif
 
+    //ota over http demo
+#if defined(CONFIG_EXAMPLE_AMAZON_FREERTOS_OTA_OVER_HTTP) && CONFIG_EXAMPLE_AMAZON_FREERTOS_OTA_OVER_HTTP
+    RunOtaCoreHttpDemo(0, NULL, NULL, NULL, NULL);
+#endif
+
     //ota over mqtt streams demo (NEW!)
 #if defined(CONFIG_EXAMPLE_AMAZON_FREERTOS_OTA_OVER_MQTT_STREAMS) && CONFIG_EXAMPLE_AMAZON_FREERTOS_OTA_OVER_MQTT_STREAMS
     RunOtaCoreMqttStreamsDemo(0, NULL, NULL, NULL, NULL);
 #endif
 
+#if defined(CONFIG_EXAMPLE_AMAZON_FREERTOS_FLEET_PROVISIONING_KEYS_CERT) && CONFIG_EXAMPLE_AMAZON_FREERTOS_FLEET_PROVISIONING_KEYS_CERT
+    RunFleetProvisioningKeysCertDemo(0, NULL, NULL, NULL, NULL);
+#endif
+
+#if defined(CONFIG_EXAMPLE_AMAZON_FREERTOS_FLEET_PROVISIONING_CSR) && CONFIG_EXAMPLE_AMAZON_FREERTOS_FLEET_PROVISIONING_CSR
+    RunFleetProvisioningCsrDemo(0, NULL, NULL, NULL, NULL);
+#endif
     printf("AWS demo run finished.\n");
 
     return 0;

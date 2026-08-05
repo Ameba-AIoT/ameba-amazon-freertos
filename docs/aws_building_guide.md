@@ -35,7 +35,12 @@ The following commands represent the primary examples supported within the Realt
 
     # Build the OTA (Over-the-Air) Update demos
     aws_build_proj ota_over_mqtt
+    aws_build_proj ota_over_http
     aws_build_proj ota_over_mqtt_streams
+
+    # Build the Fleet Provisioning demos
+    aws_build_proj fleet_provisioning_keys_cert
+    aws_build_proj fleet_provisioning_csr
 
 ### Additional References
 

@@ -167,6 +167,11 @@ typedef struct xSOCKET * Socket_t; /**< @brief Socket handle data type. */
 #define SOCKETS_SO_REQUIRE_TLS                   ( 8 )  /**< Toggle client enforcement of TLS. */
 #define SOCKETS_SO_NONBLOCK                      ( 9 )  /**< Socket is nonblocking. */
 #define SOCKETS_SO_ALPN_PROTOCOLS                ( 10 ) /**< Application protocol list to be included in TLS ClientHello. */
+
+#define SOCKETS_SO_PKCS11_SESSION                ( 11 ) /** Set the PKCS11 session object to load credential information */
+#define SOCKETS_SO_CLIENT_CERT_LABEL             ( 12 ) /** Set Client Cert for authentication */
+#define SOCKETS_SO_CLIENT_KEY_LABEL              ( 13 ) /** Set Client Key for authentication */
+
 #define SOCKETS_SO_WAKEUP_CALLBACK               ( 17 ) /**< Set the callback to be called whenever there is data available on the socket for reading. */
 #define SOCKETS_SO_TCPKEEPALIVE                  ( 18 ) /**< Enable or Disable TCP keep-alive functionality. */
 #define SOCKETS_SO_TCPKEEPALIVE_INTERVAL         ( 19 ) /**< Set the time in seconds between individual TCP keep-alive probes. */

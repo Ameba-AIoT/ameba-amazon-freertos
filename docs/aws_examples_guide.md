@@ -8,6 +8,19 @@ The AWS demo source code is centralized in [demos/demo_entry/aws_main.c](../demo
 - [Device Defender](#device-defender)
 - [OTA over MQTT](#ota-over-mqtt)
 - [OTA over MQTT streams](#ota-over-mqtt-streams)
+- [Fleet Provisioning with Keys & Cert](#fleet-provisioning-keys-cert)
+- [Fleet Provisioning with Certificate Signing Request](#fleet-provisioning-csr)
+
+**Important Note**
+
+If you are using the hardcoded key & certificate for testing, ensure that `#define KEY_PLAINTEXT 1` is set 
+- Location: [`ports/config_files/core_pkcs11_config.h`](../ports/config_files/core_pkcs11_config.h)
+
+If you are testing the `Fleet Provisioning` examples and perform a provisioning flow, ensure that `#define KEY_PLAINTEXT 0` is set, along with defining the Claim Credential Certificate and Private Key. This will skip the use of the hardcoded certificate and key.
+
+After the provisioning flow completes, a new device certificate and key will be downloaded onto the device and persists across resets. After this you may attempt to run any of the other examples (e.g `mqtt_mutual_auth`) and it will connect with the new credentials instead.
+
+Please note that currently, the flash addresses defined in the examples do not take into account OTA address regions in flash, meaning that there is a chance that the OTA may overwrite your saved credentials region. Please adjust your flash address regions accordingly to account for space for your FW, OTA space, and persistent data.
 
 ## MQTT Mutual Authentication
 
@@ -145,6 +158,110 @@ For more details, please refer to:
 - [AWS IoT Over the air (OTA) library](https://docs.aws.amazon.com/freertos/latest/userguide/ota-update-library.html)
 - [Creating an OTA update (AWS IoT console)](https://docs.aws.amazon.com/freertos/latest/userguide/ota-console-workflow.html)
 - [AWS IoT Core MQTT File Streams Embedded C](https://freertos.org/Documentation/03-Libraries/03-FreeRTOS-core/10-coreMQTT-Streams/01-coreMQTT-Streams)
+
+## Fleet Provisioning (Certificate & Key)
+
+This example demonstrates provisioning flow for devices, using the Claim mechanism to register with AWS, and then obtain a new Thing / Key / Certificate registration via the `Fleet Provisioning` library.
+
+- Source code: [`demos/fleet_provisioning/fleet_provisioning_keys_cert/fleet_provisioning_keys_cert_demo.c`](../demos/fleet_provisioning/fleet_provisioning_keys_cert/fleet_provisioning_keys_cert_demo.c).
+- Entry point: [`RunFleetProvisioningKeysCertDemo`](../demos/fleet_provisioning/fleet_provisioning_keys_cert/fleet_provisioning_keys_cert_demo.c#L488).
+
+Ensure `#define KEY_PLAINTEXT 0` is set in [`ports/config_files/core_pkcs11_config.h`](../ports/config_files/core_pkcs11_config.h), and your claim credentials are defined in [`aws_clientcredential_fleet.h`](../demos/include/aws_clientcredential_fleet.h)
+
+Ensure that your provisioning templates are created acording to the [`Setup for Fleet Provisioning Demos`] (https://github.com/aws/aws-iot-device-sdk-embedded-C/blob/main/demos/fleet_provisioning/readme.md)
+
+Expected flow of the example:
+
+Entry check — already provisioned?
+
+The demo first looks for a persisted device certificate, private key in PKCS#11 flash and a stored Thing name. If both are found it
+skips the claim flow, loads the device credentials, connects with them, publishes a test message to `test/hello`, and
+exits.
+
+Fresh provisioning path:
+
+1. Load claim credentials — the factory-provisioned `claim cert/key` are inserted into the PKCS#11 session.
+
+2. Connect with claim credentials — MQTT session established to AWS IoT Core using the claim certificate and key.
+
+3. `CreateKeysAndCertificate`
+- Subscribe to the accepted/rejected topics
+    - `$aws/certificates/create/cbor/accepted`
+    - `$aws/certificates/create/cbor/rejected`
+- Publish an empty payload to `$aws/certificates/create/cbor`.
+- Wait for the broker response; on acceptance, extract the new private key, certificate, certificate ID, and ownership token from the CBOR payload.
+- Save the private key and certificate into PKCS#11 flash.
+- Unsubscribe from the `CreateKeysAndCertificate` topics.
+
+4. `RegisterThing`
+- Subscribe to the accepted/rejected `RegisterThing` topics.
+    - `$aws/provisioning-templates/<templateName>/provision/cbor/accepted`
+    - `$aws/provisioning-templates/<templateName>/provision/cbor/rejected`
+- Publish a CBOR payload containing the ownership token and the device serial number to `$aws/provisioning-templates/<templateName>/provision/cbor`.
+- Wait for the broker response; on acceptance, extract the assigned Thing name and persist it to flash.
+- Unsubscribe from the `RegisterThing` topics.
+
+5. Disconnect the claim-credential session.
+
+6. Reconnect with provisioned credentials — a new MQTT session is established using the **newly stored device certificate and the Thing name**D as the MQTT client ID.
+
+7. Finish — disconnect and exit. On success, optionally write the certificate and private key to additional flash slots defined by `DOWNLOADED_CERT_LABEL` / `DOWNLOADED_PRIVATE_KEY_LABEL`.
+
+For more details, please refer to:
+- [AWS Fleet Provisioning Guide](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html)
+- [AWS Fleet Provisioning Setup Guide](https://github.com/aws/aws-iot-device-sdk-embedded-C/tree/main/demos/fleet_provisioning)
+- [AWS Fleet Provisioning Library](https://github.com/aws/Fleet-Provisioning-for-AWS-IoT-embedded-sdk)
+
+## Fleet Provisioning (Certificate Signing Request)
+
+This example demonstrates provisioning flow for devices, using the Claim mechanism to register with AWS, and then obtain a new Thing / Certificate registration via the `Fleet Provisioning` library via the Certificate Signing Request (CSR) pathway.
+
+- Source code: [`demos/fleet_provisioning/fleet_provisioning_csr/fleet_provisioning_csr_demo.c`](../demos/fleet_provisioning/fleet_provisioning_csr/fleet_provisioning_csr_demo.c).
+- Entry point: [`RunFleetProvisioningCsrDemo`](../demos/fleet_provisioning/fleet_provisioning_csr/fleet_provisioning_csr_demo.c#L488).
+
+Ensure `#define KEY_PLAINTEXT 0` is set in [`ports/config_files/core_pkcs11_config.h`](../ports/config_files/core_pkcs11_config.h), and your claim credentials are defined in [`aws_clientcredential_fleet.h`](../demos/include/aws_clientcredential_fleet.h)
+
+Ensure that your provisioning templates are created acording to the [`Setup for Fleet Provisioning Demos`] (https://github.com/aws/aws-iot-device-sdk-embedded-C/blob/main/demos/fleet_provisioning/readme.md)
+
+Expected flow of the example:
+
+Fresh provisioning path:
+
+1. Load claim credentials — the factory-provisioned `claim cert/key` are inserted into the PKCS#11 session.
+
+2. Connect with claim credentials — MQTT session established using the claim certificate and key.
+
+3. `CreateCertificateFromCsr` (key difference from KeysCert)
+- Subscribe to the accepted/rejected topics
+    - `$aws/certificates/create-from-csr/cbor`
+    - `$aws/certificates/create-from-csr/cbor/accepted`
+    - `$aws/certificates/create-from-csr/cbor/rejected`
+- Generate a new device key pair on-device (private key stays in PKCS#11 flash, never leaves the device) and produce a CSR from it.
+- Wrap the CSR into a CBOR payload and publish to `$aws/certificates/create-from-csr/cbor`.
+- Wait for the broker response; on acceptance, extract the signed certificate, certificate ID, and ownership token from the CBOR payload. Note: no private key is returned — it was generated locally.
+- Save the certificate into PKCS#11 flash.
+- Unsubscribe from the CSR topics.
+
+4. `RegisterThing`
+- Subscribe to the accepted/rejected `RegisterThing` topics.
+    - `$aws/provisioning-templates/<templateName>/provision/cbor/accepted`
+    - `$aws/provisioning-templates/<templateName>/provision/cbor/rejected`
+- Publish a CBOR payload containing the ownership token and the device serial number to `$aws/provisioning-templates/<templateName>/provision/cbor`.
+- Wait for the broker response; on acceptance, extract the assigned Thing name and persist it to flash.
+- Unsubscribe from the `RegisterThing` topics.
+
+5. Disconnect the claim-credential session.
+
+6. Reconnect with provisioned credentials — new MQTT session using the stored device certificate and Thing name as the
+MQTT client ID.
+
+7. Finish — disconnect and exit. Optionally writes the certificate to an additional flash slot via
+`DOWNLOADED_CERT_LABEL` (no private key label, because the key never left the device).
+
+For more details, please refer to:
+- [AWS Fleet Provisioning Guide](https://docs.aws.amazon.com/iot/latest/developerguide/provision-wo-cert.html)
+- [AWS Fleet Provisioning Setup Guide](https://github.com/aws/aws-iot-device-sdk-embedded-C/tree/main/demos/fleet_provisioning)
+- [AWS Fleet Provisioning Library](https://github.com/aws/Fleet-Provisioning-for-AWS-IoT-embedded-sdk)
 
 ## Additional References
 

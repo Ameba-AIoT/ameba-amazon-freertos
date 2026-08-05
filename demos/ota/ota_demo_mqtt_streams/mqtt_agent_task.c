@@ -425,6 +425,9 @@ static MQTTStatus_t prvMQTTInit( void )
     xTransport.recv = SecureSocketsTransport_Recv;
     xTransport.writev = NULL;
 
+    /* MQTTv5: allocate buffer for publish acknowledgements */
+    uint8_t propertyBuffer[500];
+
     /* Initialize MQTT library. */
     xReturn = MQTTAgent_Init( &xGlobalMqttAgentContext,
                               &messageInterface,
@@ -433,7 +436,11 @@ static MQTTStatus_t prvMQTTInit( void )
                               prvGetTimeMs,
                               prvIncomingPublishCallback,
                               /* Context to pass into the callback. Passing the pointer to subscription array. */
-                              NULL );
+                              NULL,
+                              /* MQTTv5: Properties buffer for MQTT Agent */
+                              propertyBuffer,
+                              /* MQTTv5: Size of properties buffer. */
+                              sizeof(propertyBuffer) );
 
     return xReturn;
 }
@@ -502,6 +509,18 @@ static MQTTStatus_t prvCreateMQTTConnection( bool xIsReconnect )
     xConnectInfo.passwordLength = ( uint16_t ) strlen( democonfigCLIENT_PASSWORD );
 #endif /* defined( democonfigCLIENT_USERNAME ) */
 
+    /* MQTTv5: Create property builder to handle MQTTv5 properties */
+    MQTTPropBuilder_t connectionProperties ;
+    uint8_t buf[500] ;
+    size_t bufLength = sizeof(buf);
+    MQTTPropertyBuilder_Init(&connectionProperties, buf, bufLength) ;
+
+    /* MQTTv5: If using property builder, must set packet size */
+    MQTTPropAdd_MaxPacketSize(&connectionProperties, MQTT_AGENT_NETWORK_BUFFER_SIZE, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT } );
+    MQTTPropAdd_RequestProbInfo(&connectionProperties, 1, NULL);
+    /* MQTTv5: Tell AWS to not use topic aliases in publish */
+    MQTTPropAdd_TopicAliasMax(&connectionProperties, 0, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT });
+
     LogInfo( ( "Creating an MQTT connection to the broker." ) );
 
     /* Send MQTT CONNECT packet to broker. MQTT's Last Will and Testament feature
@@ -510,7 +529,9 @@ static MQTTStatus_t prvCreateMQTTConnection( bool xIsReconnect )
                             &xConnectInfo,
                             NULL,
                             mqttexampleCONNACK_RECV_TIMEOUT_MS,
-                            &xSessionPresent );
+                            &xSessionPresent,
+                            &connectionProperties,
+                            NULL );
 
     if( ( xResult == MQTTSuccess ) && ( xIsReconnect == true ) )
     {

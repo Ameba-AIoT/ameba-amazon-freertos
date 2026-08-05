@@ -14,6 +14,9 @@ doxygen_warnings.txt
 !/vendors/cypress/MTB/psoc6/psoc64tfm/COMPONENT_TFM_S_FW/tfm_s_unsigned.hex
 *.bin
 *.pyc
+soc_info.json
+.PATH_TO_AMEBA_RTOS
+aws_env.sh
 
 RemoteSystemsTempFiles/*
 
@@ -24,12 +27,15 @@ build_*
 # RTK
 *.dep
 *.ewt
-#projects/realtek/amebaD/IAR/aws_demos/settings/*
-#projects/realtek/amebaD/IAR/aws_tests/settings/*
-#projects/realtek/amebaD/IAR/aws_demos/Debug/*
-#projects/realtek/amebaD/IAR/aws_tests/Debug/*
-#projects/realtek/amebaZ2/IAR/aws_demos/settings/*
-#projects/realtek/amebaZ2/IAR/aws_tests/settings/*
-#projects/realtek/amebaZ2/IAR/aws_demos/Debug/*
-#projects/realtek/amebaZ2/IAR/aws_tests/Debug/*
+
+# Python scripts
+**/__pycache__/**
+
+# Codepilot
+.codepilot*
+AGENTS.md
+
+# Claude
+.claude*
+CLAUDE.md
 

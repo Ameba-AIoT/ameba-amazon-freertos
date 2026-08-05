@@ -28,8 +28,7 @@
 
 #include "platform/iot_network.h"
 #include "platform/iot_threads.h"
-
-
+#include "lwip_netconf.h"
 
 /**
  * @brief All C SDK demo functions have this signature.
@@ -66,18 +65,16 @@ typedef struct demoContext
 /* For Realtek SDK */
 #if defined(CONFIG_AMEBADPLUS) || defined(CONFIG_AMEBAGREEN2) || defined(CONFIG_AMEBASMART) || defined(CONFIG_AMEBALITE)
 #include "ameba_rtos_version.h"
-#include "lwip_netconf.h"
 /* For ameba-rtos supported boards */
-#if defined(AMEBA_RTOS_VERSION_MAJOR) && (AMEBA_RTOS_VERSION_MAJOR == 1) && defined(AMEBA_RTOS_VERSION_MINOR) && (AMEBA_RTOS_VERSION_MINOR == 2)
-/* if SDK version is 1.2 */
-#define RTK_SDK_CHECK_CONNECTIVITY() \
-do { \
+#if defined(AMEBA_RTOS_VERSION_MAJOR) && (AMEBA_RTOS_VERSION_MAJOR == 1) && defined(AMEBA_RTOS_VERSION_MINOR) && (AMEBA_RTOS_VERSION_MINOR == 1)
+/* if SDK version is 1.1.x, use LwIP_Check_Connectivity API*/
+#define RTK_SDK_CHECK_CONNECTIVITY() LwIP_Check_Connectivity()
+#elif defined(AMEBA_RTOS_VERSION_MAJOR) && (AMEBA_RTOS_VERSION_MAJOR == 1) && defined(AMEBA_RTOS_VERSION_MINOR) && (AMEBA_RTOS_VERSION_MINOR == 2)
+/* if SDK version is 1.2.x, use LwIP_Check_Connectivity API with interface index */
+#define RTK_SDK_CHECK_CONNECTIVITY() do { \
     LogInfo( ( "Waiting for the network link up event..." ) ); \
     vTaskDelay( pdMS_TO_TICKS( 2000U ) ); \
 } while( LwIP_Check_Connectivity(NETIF_WLAN_STA_INDEX) != CONNECTION_VALID )
-#elif defined(AMEBA_RTOS_VERSION_MAJOR) && (AMEBA_RTOS_VERSION_MAJOR == 1) && defined(AMEBA_RTOS_VERSION_MINOR) && (AMEBA_RTOS_VERSION_MINOR == 1)
-/* if SDK version is 1.1, use LwIP_Check_Connectivity API*/
-#define RTK_SDK_CHECK_CONNECTIVITY() LwIP_Check_Connectivity()
 #else
 /* Use old method of connectivity detection */
 #define RTK_SDK_CHECK_CONNECTIVITY() do { \

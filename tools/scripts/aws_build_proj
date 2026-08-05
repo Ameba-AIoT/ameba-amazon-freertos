@@ -15,12 +15,16 @@ aws_examples=(
   "device_shadow"
   "device_defender"
   "ota_over_mqtt"
+  "ota_over_http"
   "ota_over_mqtt_streams"
+  "fleet_provisioning_keys_cert"
+  "fleet_provisioning_csr"
 )
 
 aws_config_files=(
   "$PATH_TO_AMEBA_AMAZON_FREERTOS/demos/include/aws_clientcredential.h"
   "$PATH_TO_AMEBA_AMAZON_FREERTOS/demos/include/aws_clientcredential_keys.h"
+  "$PATH_TO_AMEBA_AMAZON_FREERTOS/demos/include/aws_clientcredential_fleet.h"
   "$PATH_TO_AMEBA_AMAZON_FREERTOS/ports/config_files/ota_demo_config.h"
 )
 

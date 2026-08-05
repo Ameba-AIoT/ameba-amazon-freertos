@@ -180,9 +180,6 @@ static uint32_t reportId = 0;
                              MQTTSuccessFailReasonCode_t *pReasonCode,
                              MQTTPropBuilder_t * pSendPropsBuffer,
                              MQTTPropBuilder_t * pGetPropsBuffer );
-// static void publishCallback( MQTTContext_t * pMqttContext,
-//                              MQTTPacketInfo_t * pPacketInfo,
-//                              MQTTDeserializedInfo_t * pDeserializedInfo );
 
 /**
  * @brief Collect all the metrics to be sent in the device defender report.
@@ -385,84 +382,6 @@ static bool publishCallback( MQTTContext_t * pMqttContext,
 
     return valid;
 }
-
-
-#if 0
-
-static void publishCallback( MQTTContext_t * pMqttContext,
-                             MQTTPacketInfo_t * pPacketInfo,
-                             MQTTDeserializedInfo_t * pDeserializedInfo )
-{
-    DefenderStatus_t status;
-    DefenderTopic_t api;
-    bool validationResult;
-    MQTTPublishInfo_t * pPublishInfo = pDeserializedInfo->pPublishInfo;
-
-    /* Silence compiler warnings about unused variables. */
-    ( void ) pMqttContext;
-
-    /* Handle incoming publish. The lower 4 bits of the publish packet
-     * type is used for the dup, QoS, and retain flags. Hence masking
-     * out the lower bits to check if the packet is publish. */
-    if( ( pPacketInfo->type & 0xF0U ) == MQTT_PACKET_TYPE_PUBLISH )
-    {
-        status = Defender_MatchTopic( pPublishInfo->pTopicName,
-                                      pPublishInfo->topicNameLength,
-                                      &( api ),
-                                      NULL,
-                                      NULL );
-
-        if( status == DefenderSuccess )
-        {
-            if( api == DefenderJsonReportAccepted )
-            {
-                /* Check if the response is valid and is for the report we published. */
-                validationResult = validateDefenderResponse( pPublishInfo->pPayload,
-                                                             pPublishInfo->payloadLength );
-
-                if( validationResult == true )
-                {
-                    LogInfo( ( "The defender report was accepted by the service. Response: %.*s.",
-                               ( int ) pPublishInfo->payloadLength,
-                               ( const char * ) pPublishInfo->pPayload ) );
-                    reportStatus = ReportStatusAccepted;
-                }
-            }
-            else if( api == DefenderJsonReportRejected )
-            {
-                /* Check if the response is valid and is for the report we published. */
-                validationResult = validateDefenderResponse( pPublishInfo->pPayload,
-                                                             pPublishInfo->payloadLength );
-
-                if( validationResult == true )
-                {
-                    LogError( ( "The defender report was rejected by the service. Response: %.*s.",
-                                ( int ) pPublishInfo->payloadLength,
-                                ( const char * ) pPublishInfo->pPayload ) );
-                    reportStatus = ReportStatusRejected;
-                }
-            }
-            else
-            {
-                LogError( ( "Unexpected defender API : %d.", api ) );
-            }
-        }
-        else
-        {
-            LogError( ( "Unexpected publish message received. Topic: %.*s, Payload: %.*s.",
-                        ( int ) pPublishInfo->topicNameLength,
-                        ( const char * ) pPublishInfo->pTopicName,
-                        ( int ) pPublishInfo->payloadLength,
-                        ( const char * ) ( pPublishInfo->pPayload ) ) );
-        }
-    }
-    else
-    {
-        vHandleOtherIncomingPacket( pPacketInfo, pDeserializedInfo->packetIdentifier );
-    }
-}
-
-#endif
 /*-----------------------------------------------------------*/
 
 static BaseType_t collectDeviceMetrics( void )

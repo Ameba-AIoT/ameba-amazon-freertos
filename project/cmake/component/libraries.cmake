@@ -62,10 +62,10 @@ ameba_list_append(private_sources
 )
 
 ## coreMQTT Agent
-#ameba_list_append(private_sources
-#    ${AWS_CORE_MQTT_AGENT_DIR}/source/core_mqtt_agent.c
-#    ${AWS_CORE_MQTT_AGENT_DIR}/source/core_mqtt_agent_command_functions.c
-#)
+ameba_list_append(private_sources
+    ${AWS_CORE_MQTT_AGENT_DIR}/source/core_mqtt_agent.c
+    ${AWS_CORE_MQTT_AGENT_DIR}/source/core_mqtt_agent_command_functions.c
+)
 
 # corePKCS11
 ameba_list_append(private_sources
@@ -74,7 +74,7 @@ ameba_list_append(private_sources
     ${AWS_CORE_PKCS11_DIR}/source/core_pki_utils.c
 )
 
-## device defender
+# device defender
 ameba_list_append(private_sources
     ${AWS_DEVICE_DEFENDER_DIR}/source/defender.c
 )
@@ -93,13 +93,13 @@ ameba_list_append(private_sources
 
 # ota_for_aws
 ameba_list_append(private_sources
-    #${AWS_OTA_DIR}/source/portable/os/ota_os_freertos.c
-    #${AWS_OTA_DIR}/source/ota.c
-    #${AWS_OTA_DIR}/source/ota_base64.c
-    #${AWS_OTA_DIR}/source/ota_cbor.c
-    #${AWS_OTA_DIR}/source/ota_http.c
-    #${AWS_OTA_DIR}/source/ota_interface.c
-    #${AWS_OTA_DIR}/source/ota_mqtt.c
+    ${AWS_OTA_DIR}/source/portable/os/ota_os_freertos.c
+    ${AWS_OTA_DIR}/source/ota.c
+    ${AWS_OTA_DIR}/source/ota_base64.c
+    ${AWS_OTA_DIR}/source/ota_cbor.c
+    ${AWS_OTA_DIR}/source/ota_http.c
+    ${AWS_OTA_DIR}/source/ota_interface.c
+    ${AWS_OTA_DIR}/source/ota_mqtt.c
 )
 
 # mbedtls_utils
@@ -113,4 +113,9 @@ ameba_list_append(private_sources
     ${AWS_MQTT_FILE_STREAMS_DIR}/source/MQTTFileDownloader.c
     ${AWS_MQTT_FILE_STREAMS_DIR}/source/MQTTFileDownloader_cbor.c
     ${AWS_MQTT_FILE_STREAMS_DIR}/source/MQTTFileDownloader_base64.c
+)
+
+# fleet provisioning
+ameba_list_append(private_sources
+    ${AWS_FLEET_PROVISIONING_DIR}/source/fleet_provisioning.c
 )

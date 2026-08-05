@@ -68,7 +68,28 @@ bool mqttWrapper_connect( char * thingName, size_t thingNameLength )
     connectInfo.passwordLength = 0U;
     connectInfo.keepAliveSeconds = 60U;
     connectInfo.cleanSession = true;
-    mqttStatus = MQTT_Connect( globalCoreMqttContext, &connectInfo, NULL, 5000U, &sessionPresent );
+
+    /* MQTTv5: Create property builder to handle MQTTv5 properties */
+    MQTTPropBuilder_t connectionProperties ;
+    uint8_t buf[500] ;
+    size_t bufLength = sizeof(buf);
+    MQTTPropertyBuilder_Init(&connectionProperties, buf, bufLength) ;
+
+    /* MQTTv5: If using property builder, must set packet size */
+    MQTTPropAdd_MaxPacketSize(&connectionProperties, MQTT_AGENT_NETWORK_BUFFER_SIZE, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT } );
+    MQTTPropAdd_RequestProbInfo(&connectionProperties, 1, NULL);
+
+    /* MQTTv5: Set connection property (e.g session expiry) if needed */
+    // uint32_t sessionExpiryInterval = 100 ; // 100ms
+    // MQTTPropAdd_SessionExpiry(&connectionProperties, sessionExpiryInterval, &(uint8_t){ MQTT_PACKET_TYPE_CONNECT } );
+    
+    mqttStatus = MQTT_Connect( globalCoreMqttContext, 
+                                &connectInfo, 
+                                NULL, 
+                                5000U, 
+                                &sessionPresent,
+                                &connectionProperties,
+                                NULL );
     return mqttStatus == MQTTSuccess;
 }
 
@@ -145,7 +166,9 @@ bool mqttWrapper_publish( char * topic, size_t topicLength, uint8_t * message, s
         ( void ) xTaskNotifyStateClear( NULL );
 #endif
 
-        mqttStatus = MQTTAgent_Publish( xAgentHandle, &pubInfo, &xCommandParams );
+        /* MQTTv5: Add publish args if any */
+        MQTTAgentPublishArgs_t publishArgs = { .pPublishInfo = &pubInfo };
+        mqttStatus = MQTTAgent_Publish( xAgentHandle, &publishArgs, &xCommandParams );
 
         if( mqttStatus == MQTTSuccess ) {
             uint32_t ulNotifyValue = 0;
