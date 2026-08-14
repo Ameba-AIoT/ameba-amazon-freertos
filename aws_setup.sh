@@ -6,7 +6,7 @@ if [ "$#" -lt 1 ]; then
 fi
 
 PATH_TO_AMEBA_AMAZON_FREERTOS="$PWD"
-PATH_TO_AMEBA_RTOS_MATTER_SCRIPTS="$PATH_TO_AMEBA_AMAZON_FREERTOS/tools/scripts"
+PATH_TO_AMEBA_AMAZON_FREERTOS_SCRIPTS="$PATH_TO_AMEBA_AMAZON_FREERTOS/tools/scripts"
 
 cd $1
 PATH_TO_AMEBA_RTOS="$PWD"
@@ -33,8 +33,9 @@ create_amazon_freertos_env_script(){
   echo "# Additional Environment Configuration" >> "$AMAZON_FREERTOS_ENV_SCRIPT"
   echo "cd \"$PATH_TO_AMEBA_AMAZON_FREERTOS\"" >> "$AMAZON_FREERTOS_ENV_SCRIPT"
   echo "echo \"$PATH_TO_AMEBA_RTOS\" > .PATH_TO_AMEBA_RTOS" >> "$AMAZON_FREERTOS_ENV_SCRIPT"
-  echo "export PATH=\"$PATH_TO_AMEBA_RTOS_MATTER_SCRIPTS:\$PATH\"" >> "$AMAZON_FREERTOS_ENV_SCRIPT"
-  echo "chmod u+x \"$PATH_TO_AMEBA_RTOS_MATTER_SCRIPTS\"/aws_*" >> "$AMAZON_FREERTOS_ENV_SCRIPT"
+  echo "export PATH=\"$PATH_TO_AMEBA_AMAZON_FREERTOS_SCRIPTS:\$PATH\"" >> "$AMAZON_FREERTOS_ENV_SCRIPT"
+  echo "chmod u+x \"$PATH_TO_AMEBA_AMAZON_FREERTOS_SCRIPTS\"/aws_*" >> "$AMAZON_FREERTOS_ENV_SCRIPT"
+  echo "source \"$PATH_TO_AMEBA_AMAZON_FREERTOS_SCRIPTS/completion_script/aws_build_proj_completion.bash\"" >> "$AMAZON_FREERTOS_ENV_SCRIPT"
 }
 
 echo "Configuring Ameba RTOS SDK"

@@ -1,5 +1,5 @@
 [submodule "libraries/3rdparty/mbedtls"]
-	path = libraries/3rdparty/mbedtls
+	path = libraries/3rdparty/mbedtls-3.6.6
 	url = https://github.com/Mbed-TLS/mbedtls.git
 [submodule "libraries/backoffAlgorithm"]
 	path = libraries/backoffAlgorithm
@@ -40,3 +40,9 @@
 [submodule "libraries/fleet_provisioning_for_aws"]
 	path = libraries/fleet_provisioning_for_aws
 	url = https://github.com/aws/Fleet-Provisioning-for-AWS-IoT-embedded-sdk
+[submodule "libraries/3rdparty/mbedtls-2.28.1"]
+	path = libraries/3rdparty/mbedtls-2.28.1
+	url = https://github.com/Mbed-TLS/mbedtls.git
+[submodule "libraries/3rdparty/mbedtls-3.6.3"]
+	path = libraries/3rdparty/mbedtls-3.6.3
+	url = https://github.com/Mbed-TLS/mbedtls.git

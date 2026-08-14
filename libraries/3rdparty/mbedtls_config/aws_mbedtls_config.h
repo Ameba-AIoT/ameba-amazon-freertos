@@ -56,13 +56,18 @@
 #ifndef MBEDTLS_CONFIG_H
 #define MBEDTLS_CONFIG_H
 
+#if defined(CONFIG_AMEBAD) || defined(CONFIG_AMEBAZ2)
+#include <platform_opts.h>
+#endif
+
 #if defined(_MSC_VER) && !defined(_CRT_SECURE_NO_DEPRECATE)
 #define _CRT_SECURE_NO_DEPRECATE 1
 #endif
 
-#define MBEDTLS_VERSION_CONVERT(a,b,c)	(((a) << 16) + ((b) << 8) + (c))
+#include "mbedtls/version.h"
+#define MBEDTLS_VERSION_CONVERT(a,b,c) (((a) << 16) + ((b) << 8) + (c))
 #ifndef MBEDTLS_VERSION
-#define MBEDTLS_VERSION		MBEDTLS_VERSION_CONVERT(2,28,1)
+#define MBEDTLS_VERSION MBEDTLS_VERSION_CONVERT(MBEDTLS_VERSION_MAJOR, MBEDTLS_VERSION_MINOR, MBEDTLS_VERSION_PATCH)
 #endif
 
 /**
@@ -402,7 +407,8 @@
  *            digests and ciphers instead.
  *
  */
-#if !(defined(CONFIG_MBEDTLS_AMAZON_DEFINED) && (CONFIG_MBEDTLS_AMAZON_DEFINED == 1))
+#if (defined(CONFIG_AMEBADPLUS) || defined(CONFIG_AMEBALITE) || defined(CONFIG_AMEBASMART) || defined(CONFIG_AMEBAGREEN2)) && \
+    !(defined(CONFIG_MBEDTLS_AMAZON_DEFINED) && (CONFIG_MBEDTLS_AMAZON_DEFINED == 1))
  #define MBEDTLS_AES_ALT
  //#define MBEDTLS_ARC4_ALT
  //#define MBEDTLS_ARIA_ALT
@@ -1924,7 +1930,9 @@
  * PEM_PARSE uses AES for decrypting encrypted keys.
  */
 #define MBEDTLS_AES_C
+#if defined(MBEDTLS_VERSION_NUMBER) && (MBEDTLS_VERSION_NUMBER>=0x03060000)
 #define MBEDTLS_CCM_GCM_CAN_AES
+#endif
 /**
  * \def MBEDTLS_ARC4_C
  *
@@ -2292,7 +2300,9 @@
  * Requires: MBEDTLS_ECP_C
  */
 #define MBEDTLS_ECDH_C
+#if defined(MBEDTLS_VERSION_NUMBER) && (MBEDTLS_VERSION_NUMBER>=0x03060000)
 #define MBEDTLS_CAN_ECDH
+#endif
 /**
  * \def MBEDTLS_ECDSA_C
  *
@@ -2307,7 +2317,9 @@
  * Requires: MBEDTLS_ECP_C, MBEDTLS_ASN1_WRITE_C, MBEDTLS_ASN1_PARSE_C
  */
 #define MBEDTLS_ECDSA_C
+#if defined(MBEDTLS_VERSION_NUMBER) && (MBEDTLS_VERSION_NUMBER>=0x03060000)
 #define MBEDTLS_PK_CAN_ECDSA_SIGN
+#endif
 /**
  * \def MBEDTLS_ECJPAKE_C
  *
@@ -2457,7 +2469,9 @@
  * Uncomment to enable generic message digest wrappers.
  */
 #define MBEDTLS_MD_C
+#if defined(MBEDTLS_VERSION_NUMBER) && (MBEDTLS_VERSION_NUMBER>=0x03060000)
 #define MBEDTLS_MD_CAN_SHA256
+#endif
 /**
  * \def MBEDTLS_MD2_C
  *
@@ -2512,7 +2526,7 @@
  *            it, and considering stronger message digests instead.
  *
  */
-//#define MBEDTLS_MD5_C
+#define MBEDTLS_MD5_C
 
 /**
  * \def MBEDTLS_MEMORY_BUFFER_ALLOC_C
@@ -3376,7 +3390,9 @@
 #include MBEDTLS_USER_CONFIG_FILE
 #endif
 
-//#include "mbedtls/check_config.h"
+#if defined(MBEDTLS_VERSION_NUMBER) && (MBEDTLS_VERSION_NUMBER<0x03060000)
+#include "mbedtls/check_config.h"
+#endif
 
 #endif /* MBEDTLS_CONFIG_H */
 

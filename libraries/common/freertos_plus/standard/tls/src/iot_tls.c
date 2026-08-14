@@ -46,8 +46,8 @@
 #endif
 
 #include "mbedtls/net_sockets.h"
-#include "mbedtls/library/pk_internal.h"
-#include "mbedtls/library/pk_wrap.h"
+#include "pk_internal.h"
+#include "pk_wrap.h"
 #else
 #include "mbedtls/net.h"
 #include "mbedtls/pk_internal.h"

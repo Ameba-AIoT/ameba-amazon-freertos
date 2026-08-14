@@ -144,10 +144,16 @@ ameba_list_append(aws_includes
     ${AWS_FLEET_PROVISIONING_DIR}/source/include
 )
 
-ameba_list_append(private_includes
+# ports
+ameba_list_append(aws_includes
     ${AWS_PORTS_DIR}/config_files
     ${AWS_PORTS_DIR}/ota
     ${AWS_PORTS_DIR}/pkcs11
+)
+
+# to access pk_*.h for iot_tls.c
+ameba_list_append(aws_includes
+    ${c_MBEDTLS_DIR}/library
 )
 
 ameba_list_append(private_includes

@@ -181,7 +181,7 @@
 /**
  * @brief Maximum stack size of OTA agent task.
  */
-#define otaexampleAGENT_TASK_STACK_SIZE          ( 4096 * 2 )
+#define otaexampleAGENT_TASK_STACK_SIZE          ( 4 * 1024 )
 
 
 #define CONFIG_MAX_FILE_SIZE                     200 /* TODO:!! */
@@ -711,15 +711,20 @@ static bool sendSuccessMessage( void )
          * AWS IoT Jobs library:
          * Creating the message which contains the status of OTA job.
          * It will be published on the topic created in the previous step.
+         *
+         * NOTE: expectedVersion is deliberately left NULL. It is AWS IoT Jobs'
+         * optimistic-concurrency guard and must equal the job execution's current
+         * versionNumber; a hardcoded value causes UpdateJobExecution to be rejected
+         * (seen as an "unsolicited publish" on .../update/rejected), which leaves the
+         * job stuck IN_PROGRESS and the device re-running / self-test-looping the OTA.
+         * Omitting it makes AWS skip the version check.
          */
-        const char expectedVersion[] = "2";
-        const char statusDetails[] = "{\"key\":\"value\"}";
         JobsUpdateRequest_t request = {
             .status = Succeeded,
-            .expectedVersion = expectedVersion,
-            .expectedVersionLength = ( sizeof( expectedVersion ) - 1U ),
-            .statusDetails = statusDetails,
-            .statusDetailsLength = ( sizeof( statusDetails ) - 1U )
+            .expectedVersion = NULL,
+            .expectedVersionLength = 0U,
+            .statusDetails = NULL,
+            .statusDetailsLength = 0U
         };
 
         size_t messageBufferLength = Jobs_UpdateMsg( request,

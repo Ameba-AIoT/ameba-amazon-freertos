@@ -40,24 +40,40 @@
 
 /* PKCS #11 include. */
 #include "core_pkcs11_config.h"
-#include "core_pkcs11_pal.h"
+#include "core_pkcs11_pal_ameba.h"
 #include "core_pki_utils.h"
 #include "mbedtls_utils.h"
 
 /* MbedTLS include. */
 #include "mbedtls/ctr_drbg.h"
 #include "mbedtls/entropy.h"
+#if MBEDTLS_VERSION_MAJOR >= 3 && MBEDTLS_VERSION_MINOR >= 6
 #include "entropy_poll.h"
+#else
+#include "mbedtls/entropy_poll.h"
+#endif
 #include "mbedtls/error.h"
 #include "mbedtls/oid.h"
 #include "mbedtls/pk.h"
+#if MBEDTLS_VERSION_MAJOR >= 3 && MBEDTLS_VERSION_MINOR >= 6
 #include "pk_wrap.h"
+#else
+#include "mbedtls/pk_internal.h"
+#endif
 #include "mbedtls/sha256.h"
 #include "mbedtls/x509_crt.h"
 #include "mbedtls/x509_csr.h"
 
 #include "flash_api.h"
 #include "platform_stdlib.h"
+#if MBEDTLS_VERSION_MAJOR >= 3 && MBEDTLS_VERSION_MINOR >= 6
+#if defined(CONFIG_AMEBAZ2) || defined(CONFIG_AMEBAD)
+#include "osdep_service.h"
+#elif defined(CONFIG_AMEBADPLUS) || defined(CONFIG_AMEBALITE) || defined(CONFIG_AMEBASMART) || defined(CONFIG_AMEBAGREEN2)
+#include "ameba.h"
+#endif
+#endif
+
 #define pkcs11OBJECT_CERTIFICATE_MAX_SIZE    4096
 #define pkcs11OBJECT_FLASH_CERT_PRESENT      ( 0x22ABCDEFuL ) //magic number for check flash data
 
@@ -758,8 +774,17 @@ static CK_RV provisionPrivateKey( CK_SESSION_HANDLE session,
     mbedtls_entropy_init( &entropy );
     mbedtls_ctr_drbg_init( &ctr_drbg );
     mbedtls_ctr_drbg_seed( &ctr_drbg, mbedtls_entropy_func, &entropy, NULL, 0 );
+#if MBEDTLS_VERSION_MAJOR >= 3 && MBEDTLS_VERSION_MINOR >= 6
+#if defined(CONFIG_AMEBAZ2) || defined(CONFIG_AMEBAD)
     mbedResult = mbedtls_pk_parse_key( &mbedPkContext, ( const uint8_t * ) privateKey,
-                                       privateKeyLength, NULL, 0, mbedtls_ctr_drbg_random, &ctr_drbg );
+                                       privateKeyLength, NULL, 0, rtw_get_random_bytes_f_rng, &ctr_drbg );
+#elif defined(CONFIG_AMEBADPLUS) || defined(CONFIG_AMEBALITE) || defined(CONFIG_AMEBASMART) || defined(CONFIG_AMEBAGREEN2)
+    mbedResult = mbedtls_pk_parse_key( &mbedPkContext, ( const uint8_t * ) privateKey,
+                                       privateKeyLength, NULL, 0, TRNG_get_random_bytes_f_rng, &ctr_drbg );
+#endif
+#else
+    mbedResult = mbedtls_pk_parse_key( &mbedPkContext, ( const uint8_t * ) privateKey, privateKeyLength, NULL, 0 );
+#endif
 
     if( mbedResult != 0 )
     {
@@ -1328,59 +1353,50 @@ bool loadDeviceCredentials( CK_SESSION_HANDLE p11Session )
     char keyBuf[ DEVICE_PRIVATE_KEY_BUFFER_LENGTH ];
     size_t keyLen = 0;
 
-    /* Read the PEM cert and key that were saved to flash after provisioning.
-     * writeFile() stores PEM to these slots; after loadCertificate/loadPrivateKey
-     * below overwrite them with DER/raw bytes, we restore PEM so the next boot
-     * can repeat this process. */
+    /* A cert/key slot may hold the DER PKCS #11 object (used by TLS) or the PEM
+     * written after provisioning. Convert PEM to a DER object; leave DER as-is.
+     * Never write PEM back, or it clobbers the DER object the handshake reads. */
+
+    /* Pass sizeof - 1 and NUL-terminate: readFile() doesn't, but strstr() and
+     * mbedtls_pk_parse_key() need buf[len] == '\0'. */
     if( !readFile( pkcs11configLABEL_DEVICE_CERTIFICATE_FOR_TLS,
-                   certBuf, sizeof( certBuf ), &certLen ) )
+                   certBuf, sizeof( certBuf ) - 1, &certLen ) )
     {
-        LogError( ( "Failed to read device certificate PEM from flash." ) );
+        LogError( ( "Failed to read device certificate from flash." ) );
         return false;
     }
 
-    if(certBuf[certLen-1] == '\n') {
-        certBuf[certLen-1] = '\0';
-    }
+    certBuf[ certLen ] = '\0';
 
     if( !readFile( pkcs11configLABEL_DEVICE_PRIVATE_KEY_FOR_TLS,
-                   keyBuf, sizeof( keyBuf ), &keyLen ) )
+                   keyBuf, sizeof( keyBuf ) - 1, &keyLen ) )
     {
-        LogError( ( "Failed to read device private key PEM from flash." ) );
+        LogError( ( "Failed to read device private key from flash." ) );
         return false;
     }
 
-    if(keyBuf[keyLen-1] == '\n') {
-        keyBuf[keyLen-1] = '\0';
+    keyBuf[ keyLen ] = '\0';
+
+    /* Convert the certificate slot to a DER object only if it still holds PEM. */
+    if( strstr( certBuf, "-----BEGIN" ) != NULL )
+    {
+        if( !loadCertificate( p11Session, certBuf,
+                              pkcs11configLABEL_DEVICE_CERTIFICATE_FOR_TLS, certLen ) )
+        {
+            LogError( ( "Failed to load device certificate into PKCS #11." ) );
+            return false;
+        }
     }
 
-    /* Register cert and key in the PKCS #11 session (writes DER/raw to flash). */
-    if( !loadCertificate( p11Session, certBuf,
-                          pkcs11configLABEL_DEVICE_CERTIFICATE_FOR_TLS, certLen ) )
+    /* Convert the private key slot to a DER object only if it still holds PEM. */
+    if( strstr( keyBuf, "-----BEGIN" ) != NULL )
     {
-        LogError( ( "Failed to load device certificate into PKCS #11." ) );
-        //return false;
-    }
-
-    if( !loadPrivateKey( p11Session, keyBuf,
-                         pkcs11configLABEL_DEVICE_PRIVATE_KEY_FOR_TLS, keyLen ) )
-    {
-        LogError( ( "Failed to load device private key into PKCS #11." ) );
-        return false;
-    }
-
-    /* Restore PEM to flash so the next boot can read it again.
-     * loadCertificate/loadPrivateKey just overwrote these slots with DER/raw. */
-    if( !writeFile( pkcs11configLABEL_DEVICE_CERTIFICATE_FOR_TLS, certBuf, certLen ) )
-    {
-        LogError( ( "Failed to restore device certificate PEM to flash." ) );
-        return false;
-    }
-
-    if( !writeFile( pkcs11configLABEL_DEVICE_PRIVATE_KEY_FOR_TLS, keyBuf, keyLen ) )
-    {
-        LogError( ( "Failed to restore device private key PEM to flash." ) );
-        return false;
+        if( !loadPrivateKey( p11Session, keyBuf,
+                             pkcs11configLABEL_DEVICE_PRIVATE_KEY_FOR_TLS, keyLen ) )
+        {
+            LogError( ( "Failed to load device private key into PKCS #11." ) );
+            return false;
+        }
     }
 
     return true;
