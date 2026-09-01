@@ -13,6 +13,8 @@ aws_examples=(
   "ota_over_mqtt"
   "ota_over_http"
   "ota_over_mqtt_streams"
+  "fleet_provisioning_keys_cert"
+  "fleet_provisioning_csr"
 )
 
 handle_error() {

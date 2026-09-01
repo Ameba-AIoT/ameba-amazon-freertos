@@ -861,24 +861,19 @@ cleanup:
     {
         LogInfo( ( "Demo completed successfully." ) );
 
-        if (alreadyProvisioned == true) 
-            goto demo_end;
-
-#if defined( DOWNLOADED_CERT_LABEL )
-        if( writeFile( DOWNLOADED_CERT_LABEL, certificate, certificateLength ) == true )
-        {
-            LogInfo( ( "Written certificate to flash label: %s.", DOWNLOADED_CERT_LABEL ) );
-        }
-        else
-        {
-            LogError( ( "Failed to write certificate to flash label: %s.", DOWNLOADED_CERT_LABEL ) );
-        }
-#else
-        LogInfo( ( "NOTE: define DOWNLOADED_CERT_LABEL to write the certificate to flash." ) );
-#endif
+        /* Deliberately do NOT write the PEM certificate to flash here.
+         *
+         * DOWNLOADED_CERT_LABEL resolves to the device certificate label, and
+         * writeFile() shares that flash slot with the PKCS #11 PAL. loadCertificate()
+         * above already stored the DER PKCS #11 object there -- the form the TLS stack
+         * reads back via C_GetAttributeValue(). Writing PEM over it left every other
+         * example unusable (they resolve the same label by default in iot_tls.c) until
+         * a later run converted the slot back to DER.
+         *
+         * The DER object persists across reboot on its own; only the Thing name needs
+         * explicit persistence (done earlier via writeFile). */
     }
 
-demo_end:
     return ( status == true ) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 /*-----------------------------------------------------------*/

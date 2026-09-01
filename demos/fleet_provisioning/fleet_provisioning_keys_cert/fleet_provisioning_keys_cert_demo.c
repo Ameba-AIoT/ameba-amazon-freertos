@@ -877,37 +877,20 @@ cleanup:
     {
         LogInfo( ( "Demo completed successfully." ) );
 
-        if (alreadyProvisioned == true) 
-            goto demo_end;
-
-#if defined( DOWNLOADED_CERT_LABEL )
-        if( writeFile( DOWNLOADED_CERT_LABEL, certificate, certificateLength ) )
-        {
-            LogInfo( ( "Written certificate to flash slot \"%s\" successfully.", DOWNLOADED_CERT_LABEL ) );
-        }
-        else
-        {
-            LogError( ( "Failed to write downloaded certificate to flash slot \"%s\".", DOWNLOADED_CERT_LABEL ) );
-        }
-#else
-        LogInfo( ( "NOTE: define DOWNLOADED_CERT_LABEL to write the certificate to flash." ) );
-#endif
-
-#if defined( DOWNLOADED_PRIVATE_KEY_LABEL )
-        if( writeFile( DOWNLOADED_PRIVATE_KEY_LABEL, privatekey, privatekeyLength ) )
-        {
-            LogInfo( ( "Written private key to flash slot \"%s\" successfully.", DOWNLOADED_PRIVATE_KEY_LABEL ) );
-        }
-        else
-        {
-            LogError( ( "Failed to write downloaded private key to flash slot \"%s\".", DOWNLOADED_PRIVATE_KEY_LABEL ) );
-        }
-#else
-        LogInfo( ( "NOTE: define DOWNLOADED_PRIVATE_KEY_LABEL to write the private key to flash." ) );
-#endif
+        /* Deliberately do NOT write the PEM cert/key to flash here.
+         *
+         * DOWNLOADED_CERT_LABEL / DOWNLOADED_PRIVATE_KEY_LABEL resolve to the
+         * device cert/key labels, and writeFile() shares those flash slots with the
+         * PKCS #11 PAL. loadPrivateKey()/loadCertificate() above already stored the
+         * DER PKCS #11 objects there -- the form the TLS stack reads back via
+         * C_GetAttributeValue()/C_Sign(). Writing PEM over them left every other
+         * example unusable (they resolve the same labels by default in iot_tls.c)
+         * until a later run converted the slots back to DER.
+         *
+         * The DER objects persist across reboot on their own; only the Thing name
+         * needs explicit persistence (done earlier via writeFile). */
     }
 
-demo_end:
     return ( status == true ) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 /*-----------------------------------------------------------*/

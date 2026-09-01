@@ -31,18 +31,22 @@ ameba_list_append(aws_defintions
 
 if(CONFIG_AMEBADPLUS)
 ameba_list_append(aws_defintions
+    CONFIG_AMEBADPLUS=1
     configPLATFORM_NAME="RealtekAmebaDplus"
 )
 elseif(CONFIG_AMEBALITE)
 ameba_list_append(aws_defintions
+    CONFIG_AMEBALITE=1
     configPLATFORM_NAME="RealtekAmebaLite"
 )
 elseif(CONFIG_AMEBASMART)
 ameba_list_append(aws_defintions
+    CONFIG_AMEBASMART=1
     configPLATFORM_NAME="RealtekAmebaSmart"
 )
 elseif(CONFIG_AMEBAGREEN2)
 ameba_list_append(aws_defintions
+    CONFIG_AMEBAGREEN2=1
     configPLATFORM_NAME="RealtekAmebaGreen2"
 )
 else()

@@ -557,6 +557,28 @@ static SemaphoreHandle_t xBufferSemaphore;
 static const char * pcPath;
 
 /**
+ * @brief Offset of the next byte of the update file that has not been fetched yet.
+ *
+ * The OTA library derives the byte range it asks for from a counter that only
+ * advances when a response is decoded, so a request issued while an earlier
+ * response is still queued asks for a range that was already fetched. The
+ * library then stores that duplicated payload under the next block index, which
+ * silently corrupts the image and only shows up as a signature failure at the
+ * end of the download. Tracking the fetch position here keeps every request on a
+ * distinct range, in the same order the library decodes them.
+ */
+static uint32_t ulNextRangeStart = 0;
+
+/**
+ * @brief Set once a response shorter than a full block has been received, which
+ * marks the end of the update file.
+ *
+ * Requests the OTA agent still has in flight at that point would ask for a range
+ * that starts past the end of the file, which S3 answers with 416.
+ */
+static bool xFileEndReached = false;
+
+/**
  * @brief Update File path buffer.
  */
 static uint8_t pucUpdateFilePath[ otaexampleMAX_FILE_PATH_SIZE ];
@@ -1732,6 +1754,17 @@ static OtaHttpStatus_t prvHandleHttpResponse( const HTTPResponse_t * pxResponse 
                 memcpy( pxData->data, pxResponse->pBody, pxResponse->bodyLen );
                 pxData->dataLength = pxResponse->bodyLen;
 
+                /* This block is on its way to the OTA agent, which decodes the
+                 * responses in the order they were requested, so the fetch
+                 * position moves on. Only advance here: if no buffer was
+                 * available the agent re-requests the same range. */
+                ulNextRangeStart += pxResponse->bodyLen;
+
+                if( pxResponse->bodyLen < otaconfigFILE_BLOCK_SIZE )
+                {
+                    xFileEndReached = true;
+                }
+
                 /* Send job document received event. */
                 xEventMsg.eventId = OtaAgentEventReceivedFileBlock;
                 xEventMsg.pEventData = pxData;
@@ -1855,6 +1888,40 @@ static OtaHttpStatus_t prvHttpRequest( uint32_t ulRangeStart,
     ( void ) memset( &xRequestInfo, 0, sizeof( xRequestInfo ) );
     ( void ) memset( &xResponse, 0, sizeof( xResponse ) );
     ( void ) memset( &xRequestHeaders, 0, sizeof( xRequestHeaders ) );
+
+    if( ulRangeStart == 0U )
+    {
+        /* The OTA library only asks for the first block again once it has closed
+         * the previous file, so this is the start of a new download. */
+        ulNextRangeStart = 0U;
+        xFileEndReached = false;
+    }
+    else if( ulRangeStart < ulNextRangeStart )
+    {
+        /* The agent had more than one request in flight, so this one repeats a
+         * range that has already been handed over. Serve the next range instead:
+         * the agent numbers the blocks in the order it decodes the responses, so
+         * the payload still lands at the right offset. */
+        LogDebug( ( "Coalescing in-flight HTTP range request: requested start=%u,"
+                    " already fetched up to %u.",
+                    ulRangeStart, ulNextRangeStart ) );
+
+        ulRangeStart = ulNextRangeStart;
+        ulRangeEnd = ulRangeStart + otaconfigFILE_BLOCK_SIZE - 1U;
+    }
+
+    if( xFileEndReached == true )
+    {
+        /* The whole file has been fetched. Anything the agent still has queued
+         * would ask for a range beyond the end of the object. */
+        LogDebug( ( "Ignoring HTTP range request past the end of the update file:"
+                    " start=%u.", ulRangeStart ) );
+
+        return OtaHttpSuccess;
+    }
+
+    LogDebug( ( "Requesting bytes %u-%u of the update file over HTTP.",
+                ulRangeStart, ulRangeEnd ) );
 
     /* Initialize the request object. */
     xRequestInfo.pHost = pcServerHost;

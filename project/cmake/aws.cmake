@@ -85,3 +85,12 @@ else()
     message(STATUS "LWIP_UDP is set to 0")
     set(CONFIG_LWIP_UDP 0)
 endif()
+
+# Apply patch to libraries/ota_for_aws/source/ota.c, removing hardfault issue from AWS HTTP OTA example.
+# The patch truncates the update_data_url log so the long pre-signed S3 URL does not overflow the log buffer.
+set(AWS_OTA_PATCHED_FILE "${AWS_PORTS_DIR}/patches/ota_for_aws/ota.c")
+execute_process(
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${AWS_OTA_PATCHED_FILE}" "${AWS_OTA_DIR}/source/ota.c"
+)
+message(STATUS "Applied patched ota_for_aws/source/ota.c from ${AWS_OTA_PATCHED_FILE}")

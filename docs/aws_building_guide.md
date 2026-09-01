@@ -12,6 +12,8 @@ Before building and running the example, please follow the [AWS IoT Setup Guidan
 This general guide provides an overview of the AWS integration process and serves as a foundational resource for understanding how to build AWS on various ICs supported by Ameba.
 
 - [Ameba RTOS SDK Building Guide](ameba-rtos_general_build.md) - Step-by-step instructions for building AWS on Ameba RTOS SDK.
+- [Ameba D SDK Building Guide](amebad_general_build.md) - Step-by-step instructions for building AWS on Ameba D SDK.
+- [Ameba Z2 SDK Building Guide](amebaz2_general_build.md) - Step-by-step instructions for building AWS on Ameba Z2 SDK.
 
 ## Building Different Applications
 
@@ -41,6 +43,18 @@ The following commands represent the primary examples supported within the Realt
     # Build the Fleet Provisioning demos
     aws_build_proj fleet_provisioning_keys_cert
     aws_build_proj fleet_provisioning_csr
+
+### Ameba D / Z2
+
+To specify the primary example to be compiled for Ameba D / Z2 SDK, users must modify the `platform_opts_aws.h` by enabling only one of the example config.
+
+#### Ameba D build command
+
+    make all
+
+#### Ameba Z2 build command
+
+    make amazon is_amazon
 
 ### Additional References
 
